@@ -1,0 +1,524 @@
+1c1
+< #include "qreuse.h"
+---
+> #include "qreuse_tiles.h"
+3c3
+< QReuse::QReuse(double dimensions)
+---
+> QReuse_Tiles::QReuse_Tiles(double dimensions)
+9,17c9,11
+<         Q_KNN* learning_algorithm;
+<         if(i == 1) learning_algorithm = new Q_KNN(0.01, 0.99);
+<         else if(i == 2) learning_algorithm = new Q_KNN(0.01, 0.99);
+<         else if(i == 3) learning_algorithm = new Q_KNN(0.1, 0.99);
+<         else learning_algorithm = new Q_KNN(0.1, 0.99);
+< 
+<         //learning_algorithm->init_knn((i-1)*2 + 1, i, 0);
+<         if(i == 4) learning_algorithm->init_knn(10, i, 0);
+<         else learning_algorithm->init_knn(1, i, 0);
+---
+>         QTiles* learning_algorithm;
+>         if(i == 1) learning_algorithm = new QTiles(0.001, 0.99);
+>         else learning_algorithm = new QTiles(0.01, 0.99);
+21,23c15
+< 
+< 
+< void QReuse::set_projection_dimension(int projection_dimension)
+---
+> void QReuse_Tiles::set_projection_dimension(int projection_dimension)
+31,33d22
+< 
+<     if(all_states.size() == 0) compute_all_states();
+<     pca_interface->set_projection_dimension(projection_dimension);
+34a24,29
+>     pca_interface->set_projection_dimension(projection_dimension);
+>     vector<int> num_states;
+>     vector<double> temp_resolution;
+>     if(all_states.size() == 0)
+>         compute_all_states();
+> 
+37,40c32,33
+<         vector<double> down_range_min(projection_dimension);
+<         vector<double> down_range_max(projection_dimension);
+< 
+<         ofstream file ("transformed.csv");
+---
+>         vector<double> down_range_min(all_states[0].size());
+>         vector<double> down_range_max(all_states[0].size());
+44d36
+< 
+46d37
+<             if(abs(s[0] - -0.5) < 0.1) file << down_state[0] << endl;
+62,66d52
+<         file.close();
+<         //exit(1);
+<         cout << down_range_max[0] << "," << down_range_min[0] << endl;
+< 
+<         vector<double> temp_resolution;
+70,129c56
+<             temp_resolution.push_back(abs(down_range_min[i] - down_range_max[i])/(50));
+<         }
+<         cout << temp_resolution[0] << endl;
+< 
+<         vector<int> num_states;
+<         for(unsigned int i = 0; i < down_range_min.size(); i++)
+<         {
+<             num_states.push_back(abs((down_range_min[i] - down_range_max[i])/temp_resolution[i]));
+<         }
+<         vector<vector<double> > all_values;
+< 
+<         for(unsigned int i = 0; i < num_states.size(); i++)
+<         {
+<             vector<double> values;
+<             //values.push_back(down_range_min[i]);
+<             for(unsigned int j = 0; j < num_states[i]; j++)
+<             {
+<                 values.push_back(down_range_min[i] + (temp_resolution[i] * (j)));
+<             }
+<             //if(values.back() != down_range_max[i]) values.push_back(down_range_max[i]);
+<             all_values.push_back(values);
+<         }
+<         vector<vector<double>::iterator> locations;
+<         for(unsigned int i = 0; i < num_states.size(); i++)
+<         {
+<             locations.push_back(all_values[i].begin());
+<         }
+< 
+<         bool done = false;
+<         while(true)
+<         {
+<             int cur_it = num_states.size()-1;
+<             //Check if you're at the end of the last list. If you are, reset that list and increase the previous one.
+<             while(true)
+<             {
+<                 if(locations[0] == all_values[0].end())
+<                 {
+<                     done = true;
+<                     break;
+<                 }
+<                 if(locations[cur_it] == all_values[cur_it].end())
+<                 {
+<                     locations[cur_it] = all_values[cur_it].begin();
+<                     cur_it--;
+<                     locations[cur_it]++;
+<                 }
+<                 else break;
+<             }
+<             if(done) break;
+<             QElement::State s;
+<             for(unsigned int j = 0; j < locations.size(); j++)
+<             {
+<                 s.push_back(*locations[j]);
+<             }
+<             locations.back()++;
+<             QElement* ele = new QElement();
+<             ele->s = s;
+<             ele->a = possible_actions;
+<             ele->v = vector<double>(possible_actions.size());
+<             new_q_table.push_back(ele);
+---
+>             temp_resolution.push_back(abs(down_range_max[i] - down_range_min[i])/(50));
+130a58,59
+>         learning_algorithms[cur_dimension-1]->set_resolution(temp_resolution);
+>         learning_algorithms[cur_dimension-1]->set_range(down_range_min, down_range_max);
+134,232c63,64
+<         //ofstream file ("transformed.csv");
+< 
+< 
+< 
+<         pca_interface->set_projection_dimension(cur_dimension);
+<         for(unsigned int i = 0; i < all_states.size(); i++)
+<         {
+<             QElement* ele = new QElement();
+<             //ele->s = pca_interface->transform_down(&all_states[i]);
+<             ele->s = all_states[i];
+<             //if(abs(all_states[i][0] - -0.5) < 0.0001) file << ele->s[0] << "," << ele->s[1] << endl;
+<             //if(abs(all_states[i][0] - -0.5) < 0.0001) file << all_states[i][0] << "," << all_states[i][1] << endl;
+<             //file << ele->s[0] << "," << ele->s[1] << endl;
+<             ele->a = possible_actions;
+<             ele->v = vector<double>(possible_actions.size());
+<             new_q_table.push_back(ele);
+<             all_states[i].clear();
+<         }
+<         //file.close();
+<     }
+<     //exit(1);
+<     cout << new_q_table.size() << endl;
+< 
+<     learning_algorithms[cur_dimension-1]->reset_table(new_q_table);
+< 
+< 
+< 
+< 
+< 
+< 
+< 
+<     /*
+< 
+< 
+<     vector<QElement*> new_q_table;
+<     pca_interface->set_projection_dimension(projection_dimension);
+<     vector<int> num_states;
+<     vector<double> temp_resolution;
+<     for(unsigned int i = 0; i < resolution.size(); i++)
+<     {
+<         temp_resolution.push_back(resolution[i] * pow(pow(total_dimensions*10,total_dimensions-projection_dimension), 1.0/resolution.size()));
+<         //temp_resolution.push_back(resolution[i]*(total_dimensions-(projection_dimension-1)) * 1.2);
+<         //temp_resolution.push_back(resolution[i]);
+<     }
+<     for(unsigned int i = 0; i < ranges_min.size(); i++)
+<     {
+<         num_states.push_back((ranges_max[i] - ranges_min[i])/temp_resolution[i]);
+<     }
+<     vector<vector<double> > all_values;
+<     for(unsigned int i = 0; i < num_states.size(); i++)
+<     {
+<         vector<double> values;
+<         values.push_back(ranges_min[i]);
+<         for(unsigned int j = 0; j < num_states[i]; j++)
+<         {
+<             values.push_back(ranges_min[i] + (temp_resolution[i] * (j+1)));
+<         }
+<         if(values.back() != ranges_max[i]) values.push_back(ranges_max[i]);
+<         all_values.push_back(values);
+<     }
+<     vector<vector<double>::iterator> locations;
+<     for(unsigned int i = 0; i < num_states.size(); i++)
+<     {
+<         locations.push_back(all_values[i].begin());
+<     }
+< 
+<     bool done = false;
+<     while(true)
+<     {
+<         int cur_it = num_states.size()-1;
+<         //Check if you're at the end of the last list. If you are, reset that list and increase the previous one.
+<         while(true)
+<         {
+<             if(locations[0] == all_values[0].end())
+<             {
+<                 done = true;
+<                 break;
+<             }
+<             if(locations[cur_it] == all_values[cur_it].end())
+<             {
+<                 locations[cur_it] = all_values[cur_it].begin();
+<                 cur_it--;
+<                 locations[cur_it]++;
+<             }
+<             else break;
+<         }
+<         if(done) break;
+<         QElement::State s;
+<         for(unsigned int j = 0; j < locations.size(); j++)
+<         {
+<             s.push_back(*locations[j]);
+<         }
+<         locations.back()++;
+< 
+<         QElement* ele = new QElement();
+<         ele->s = pca_interface->transform_down(&s);
+<         ele->a = possible_actions;
+<         ele->v = vector<double>(possible_actions.size());
+<         new_q_table.push_back(ele);
+---
+>         learning_algorithms[cur_dimension-1]->set_resolution(resolution);
+>         learning_algorithms[cur_dimension-1]->set_range(ranges_min, ranges_max);
+234d65
+<     cout << new_q_table.size() << endl;
+236,237c67
+<     learning_algorithms[cur_dimension-1]->reset_table(new_q_table);
+< */
+---
+>     //learning_algorithms[cur_dimension-1]->reset_table(new_q_table);
+240c70
+< QElement::Action QReuse::get_action(QElement::State* state)
+---
+> QElement::Action QReuse_Tiles::get_action(QElement::State* state)
+249c79
+< void QReuse::update(QElement::State* old_state, QElement::Action old_action, QElement::State* new_state, double reward)
+---
+> void QReuse_Tiles::update(QElement::State* old_state, QElement::Action old_action, QElement::State* new_state, double reward)
+258d87
+<         //if(i != cur_dimension) continue;
+260,269c89
+<         QElement::State down_state;
+<         if(i == total_dimensions)
+<         {
+<             down_state = *new_state;
+<         }
+<         else
+<         {
+<             down_state = pca_interface->transform_down(new_state);
+<         }
+< 
+---
+>         QElement::State down_state = pca_interface->transform_down(new_state);
+306c126
+<     //QElement::State down_new_state = pca_interface->transform_down(new_state);
+---
+>     QElement::State down_new_state = pca_interface->transform_down(new_state);
+308a129,133
+>     static int it = 0;
+>     std::clock_t    start;
+>     start = std::clock();
+> 
+> 
+311,313c136,139
+<     QElement::State* nearest_old;
+<     learning_algorithms[cur_dimension-1]->get_nearest_state(&down_old_state, &nearest_old);
+<     policy.push_back(make_pair(nearest_old, old_action));
+---
+>     //if(it++ % 1000 == 0) std::cout << "Time: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
+>     //QElement::State* nearest_old;
+>     //learning_algorithms[cur_dimension-1]->get_nearest_state(&down_old_state, &nearest_old);
+>     //policy.push_back(make_pair(nearest_old, old_action));
+317c143
+< void QReuse::solve_manifold(vector<QElement::State>* states)
+---
+> void QReuse_Tiles::solve_manifold(vector<QElement::State>* states)
+323c149
+< map<int, double> QReuse::compute_action_values(QElement::State* state)
+---
+> map<int, double> QReuse_Tiles::compute_action_values(QElement::State* state)
+326a153
+>         //for(unsigned int i = 1; i <= cur_dimension; i++)
+330,338c157
+<         QElement::State down_state;
+<         if(i == total_dimensions)
+<         {
+<             down_state = *state;
+<         }
+<         else
+<         {
+<             down_state = pca_interface->transform_down(state);
+<         }
+---
+>         QElement::State down_state = pca_interface->transform_down(state);
+342d160
+<             //if(i != cur_dimension) cout << it->second << ",";
+345d162
+<         //if(i != cur_dimension) cout << endl;
+356d172
+<     update_args.old_probabilities = learning_algorithms[cur_dimension-1]->old_probabilities;
+362c178
+< map<int, double> QReuse::compute_action_values_empty(QElement::State *state)
+---
+> void QReuse_Tiles::compute_all_states()
+364,370c180,181
+<     /*
+<     map<int, double> action_values;
+<     pca_interface->set_projection_dimension(cur_dimension);
+<     QElement::State down_state = pca_interface->transform_down(state);
+<     map<int, double> cur_action_values = learning_algorithms[i-1]->get_action_values(down_state);
+< 
+<     if(cur_dimension != 1)
+---
+>     vector<int> num_states;
+>     for(unsigned int i = 0; i < ranges_min.size(); i++)
+372c183,190
+<         for(map<int, double>::iterator it = cur_action_values.begin(); it != cur_action_values.end(); it++)
+---
+>         num_states.push_back((ranges_max[i] - ranges_min[i])/resolution[i]);
+>     }
+>     vector<vector<double> > all_values;
+>     for(unsigned int i = 0; i < num_states.size(); i++)
+>     {
+>         vector<double> values;
+>         //values.push_back(ranges_min[i]);
+>         for(unsigned int j = 0; j < num_states[i]; j++)
+374,386c192
+<             if(it->second == 0)
+<             {
+<                 pca_interface->set_projection_dimension(cur_dimension-1);
+<                  QElement::State down_state = pca_interface->transform_down(state);
+<                 map<int, double> cur_action_values = learning_algorithms[cur_dimension-2]->get_action_values(down_state);
+<                 for(map<int, double>::iterator it = cur_action_values.begin(); it != cur_action_values.end(); it++)
+<                 {
+< 
+<                 }
+<                 vector<double> V;
+<                 learning_algorithms[i-1]->update_state(s, V);
+< 
+<             }
+---
+>             values.push_back(ranges_min[i] + (resolution[i] * (j)));
+387a194,200
+>         //if(values.back() != ranges_max[i]) values.push_back(ranges_max[i]);
+>         all_values.push_back(values);
+>     }
+>     vector<vector<double>::iterator> locations;
+>     for(unsigned int i = 0; i < num_states.size(); i++)
+>     {
+>         locations.push_back(all_values[i].begin());
+390,393c203,204
+< 
+< 
+<     for(set<int>::iterator used_proj_it = used_projections.begin(); used_proj_it != used_projections.end(); used_proj_it++)
+<         //for(unsigned int i = 1; i <= cur_dimension; i++)
+---
+>     bool done = false;
+>     while(true)
+395,402c206,208
+<         int i = *used_proj_it;
+<         pca_interface->set_projection_dimension(i);
+<         QElement::State down_state;
+<         if(i == total_dimensions)
+<         {
+<             down_state = *state;
+<         }
+<         else
+---
+>         int cur_it = num_states.size()-1;
+>         //Check if you're at the end of the last list. If you are, reset that list and increase the previous one.
+>         while(true)
+404c210,221
+<             down_state = pca_interface->transform_down(state);
+---
+>             if(locations[0] == all_values[0].end())
+>             {
+>                 done = true;
+>                 break;
+>             }
+>             if(locations[cur_it] == all_values[cur_it].end())
+>             {
+>                 locations[cur_it] = all_values[cur_it].begin();
+>                 cur_it--;
+>                 locations[cur_it]++;
+>             }
+>             else break;
+406,407c223,225
+<         map<int, double> cur_action_values = learning_algorithms[i-1]->get_action_values(down_state);
+<         for(map<int, double>::iterator it = cur_action_values.begin(); it != cur_action_values.end(); it++)
+---
+>         if(done) break;
+>         QElement::State s;
+>         for(unsigned int j = 0; j < locations.size(); j++)
+409c227
+<             action_values[it->first] += it->second;
+---
+>             s.push_back(*locations[j]);
+410a229,230
+>         locations.back()++;
+>         all_states.push_back(s);
+412,434d231
+< 
+<     static int it = 0;
+<     it++;
+<     if(state->at(0) == -0.5)
+<     {
+<         //cout << action_values[0] << "," << action_values[1] << "," << action_values[2] << endl;
+<         //if(cur_dimension == 2) exit(1);
+<     }
+<     update_args.state = *state;
+<     update_args.old_probabilities = learning_algorithms[cur_dimension-1]->old_probabilities;
+<     update_args.states_to_update = learning_algorithms[cur_dimension-1]->old_states;
+<     pca_interface->set_projection_dimension(cur_dimension);
+<     return action_values;
+< */
+< }
+< 
+< void QReuse::check_seen(QElement::State *state)
+< {
+<     /*
+<     pca_interface->set_projection_dimension(cur_dimension-1);
+<     QElement::State down_state = pca_interface->transform_down(state);
+<     map<int, double> cur_action_values = learning_algorithms[cur_dimension-2]->get_action_values(down_state);
+< */
+436,437c233
+< 
+< void QReuse::set_range(vector<double> ranges_min_input, vector<double> ranges_max_input)
+---
+> void QReuse_Tiles::set_range(vector<double> ranges_min_input, vector<double> ranges_max_input)
+443c239
+< void QReuse::set_resolution(vector<double> resolution_input)
+---
+> void QReuse_Tiles::set_resolution(vector<double> resolution_input)
+448c244
+< int QReuse::get_table_size()
+---
+> int QReuse_Tiles::get_table_size()
+453c249
+< void QReuse::clear_trace()
+---
+> void QReuse_Tiles::clear_trace()
+458c254
+< bool QReuse::is_converged(int projection_dimension)
+---
+> bool QReuse_Tiles::is_converged(int projection_dimension)
+495c291
+<     if(total/size_big > 0.7)
+---
+>     if(total/size_big > 0.8)
+500c296
+<     if(total_similar > 500000)
+---
+>     if(total_similar > 100000)
+508c304
+< void QReuse::set_possible_actions(vector<QElement::Action> new_possible_actions)
+---
+> void QReuse_Tiles::set_possible_actions(vector<QElement::Action> new_possible_actions)
+517,579d312
+< }
+< void QReuse::compute_all_states()
+< {
+<     vector<int> num_states;
+<     for(unsigned int i = 0; i < ranges_min.size(); i++)
+<     {
+<         num_states.push_back((ranges_max[i] - ranges_min[i])/resolution[i]);
+<         cout << num_states[i] << endl;
+<     }
+<     cout << endl;
+<     vector<vector<double> > all_values;
+<     for(unsigned int i = 0; i < num_states.size(); i++)
+<     {
+<         cout << num_states[i] << endl;
+<         vector<double> values;
+<         //values.push_back(ranges_min[i]);
+<         for(unsigned int j = 0; j < num_states[i]; j++)
+<         {
+<             values.push_back(ranges_min[i] + (resolution[i] * (j)));
+<         }
+<         //if(values.back() != ranges_max[i]) values.push_back(ranges_max[i]);
+<         all_values.push_back(values);
+<     }
+<     vector<vector<double>::iterator> locations;
+<     for(unsigned int i = 0; i < num_states.size(); i++)
+<     {
+<         locations.push_back(all_values[i].begin());
+<     }
+< 
+<     bool done = false;
+<     while(true)
+<     {
+<         int cur_it = num_states.size()-1;
+<         //Check if you're at the end of the last list. If you are, reset that list and increase the previous one.
+<         while(true)
+<         {
+<             if(locations[0] == all_values[0].end())
+<             {
+<                 done = true;
+<                 break;
+<             }
+<             if(locations[cur_it] == all_values[cur_it].end())
+<             {
+<                 locations[cur_it] = all_values[cur_it].begin();
+<                 cur_it--;
+<                 locations[cur_it]++;
+<             }
+<             else break;
+<         }
+<         if(done) break;
+<         QElement::State s;
+<         for(unsigned int j = 0; j < locations.size(); j++)
+<         {
+<             s.push_back(*locations[j]);
+<         }
+<         locations.back()++;
+<         //Normalize?
+<         //        for(unsigned int j = 0; j < s.size(); j++)
+<         //        {
+<         //            s[j] = (s[j] - ranges_min[j])/(ranges_max[j] - ranges_min[j]);
+<         //        }
+<         all_states.push_back(s);
+<     }
