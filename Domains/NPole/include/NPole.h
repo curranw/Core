@@ -23,6 +23,9 @@ public:
     void compute_possible_actions();
 
     void calculate_accel(vector<double> action);
+    arma::Mat<double> calculate_G();
+    arma::Mat<double> calculate_F();
+    arma::Mat<double> calculate_U();
     void calculate_pos(bool output);
 
     double sind(double degrees);
@@ -32,11 +35,16 @@ public:
     void calculate_performance();
 
     int num_links;
+    int num_states;
     vector<double> mass;
+    double cart_mass;
     vector<double> length;
-
+    vector<double> damp;
+    vector<int> cycles;
     arma::Mat<double> theta;
+    arma::Mat<double> state;
     arma::Mat<double> theta_dot;
+    arma::Mat<double> state_dot;
 
     vector<double> link_pos_x;
     vector<double> link_pos_y;
@@ -46,6 +54,7 @@ public:
     double theta_min;
     double vel_limit;
     double len_limit;
+    double fail_y;
     int num_iterations;
     double cum_r;
 

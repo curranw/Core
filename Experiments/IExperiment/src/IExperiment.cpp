@@ -2,6 +2,7 @@
 
 IExperiment::IExperiment(IDomain* domain, ILearningAlgorithm *learning_algorithm, IExperimentArgs *experiment_args)
 {
+    tot_reward = 0;
     m_domain = domain;
     m_learning_algorithm = learning_algorithm;
     m_exp_args = experiment_args;
@@ -64,6 +65,21 @@ void IExperiment::step()
     update_params.action = action_value.first;
     update_params.old_value = action_value.second;
 
+//    cout << "State: ";
+//    for(unsigned int i = 0; i < state.size(); i++)
+//    {
+//        cout << state[i] << ",";
+//    }
+//    cout << endl;
+//    cout << "Next State: ";
+//    for(unsigned int i = 0; i < next_state.size(); i++)
+//    {
+//        cout << next_state[i] << ",";
+//    }
+//    cout << endl;
+//    cout << "Action: " << action_value.first << endl;
+//    cout << "Reward: " << reward << endl;
+
     m_learning_algorithm->update(update_params);
 
     tot_reward += reward;
@@ -79,7 +95,7 @@ void IExperiment::get_reward()
 
 void IExperiment::output_results()
 {
-    vector<double> moving_average = utils::moving_average(&m_rewards, double(m_exp_args->num_epochs)/100);
+    vector<double> moving_average = utils::moving_average(&m_rewards, double(m_exp_args->num_epochs)/100.0);
     utils::to_csv(&moving_average, m_exp_args->save_file);
 }
 

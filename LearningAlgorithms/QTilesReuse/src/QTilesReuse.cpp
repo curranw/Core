@@ -62,9 +62,11 @@ void QTilesReuse::set_projection_dimension(int projection_dimension)
         {
             //temp_resolution.push_back(abs(down_range_max[i] - down_range_min[i])/((total_dimensions-(cur_dimension-1) ) *10));
             //temp_resolution.push_back(abs(ranges_max_all[projection_dimension-1][i] - ranges_min_all[projection_dimension-1][i])/(50));
-            temp_resolution.push_back(abs(1.0 - 0.0)/(10));
+            //temp_resolution.push_back(abs(1.0 - 0.0)/(10));
 
-            //temp_resolution.push_back(abs(1.0 - 0.0)/(20));
+            temp_resolution.push_back(abs(1.0 - 0.0)/(10.0));
+
+
         }
         m_learning_algorithms[cur_dimension-1]->set_resolution(temp_resolution);
         m_learning_algorithms[cur_dimension-1]->set_ranges(ranges_min_all[projection_dimension-1], ranges_max_all[projection_dimension-1]);
@@ -74,8 +76,9 @@ void QTilesReuse::set_projection_dimension(int projection_dimension)
         m_resolution.clear();
         for(unsigned int i = 0; i < total_dimensions; i++)
         {
-            //m_resolution.push_back(0.05);
-            m_resolution.push_back(0.1);
+            m_resolution = m_args->resolution;
+           // m_resolution.push_back(0.05);
+            //m_resolution.push_back(0.1);
         }
         m_learning_algorithms[cur_dimension-1]->set_resolution(m_resolution);
         m_learning_algorithms[cur_dimension-1]->set_ranges(m_min_ranges, m_max_ranges);
@@ -219,7 +222,7 @@ void QTilesReuse::update(QUpdate update)
         for(map<int, double>::iterator it = cur_action_values.begin(); it != cur_action_values.end(); it++)
         {
             if(i == cur_dimension) new_action_values[it->first] += it->second;
-            else new_action_values[it->first] += it->second + 100;
+            else new_action_values[it->first] += it->second + 1;
         }
     }
 
@@ -303,7 +306,7 @@ map<int, double> QTilesReuse::compute_action_values(QElement::State* state)
         for(map<int, double>::iterator it = cur_action_values.begin(); it != cur_action_values.end(); it++)
         {
             if(i == cur_dimension) action_values[it->first] += it->second;
-            else action_values[it->first] += it->second + 100;
+            else action_values[it->first] += it->second + 1;
         }
     }
 
@@ -423,6 +426,9 @@ void QTilesReuse::clear_trace()
 
 bool QTilesReuse::is_converged()
 {
+//    cout << num_updates << endl;
+//    cout << num_similar << endl;
+//    exit(1);
     if(total_dimensions == cur_dimension) return false;
     double val = num_similar/num_updates;
     static int it = 0;
@@ -430,11 +436,10 @@ bool QTilesReuse::is_converged()
     num_similar = 0;
     num_updates = 0;
     static int num = 0;
-    if(val > .95) num++;
+    if(val > .99) num++;
     else num = 0;
-    if(num == 5)
+    if(num == 25)
     {
-        cout << "DOIN IT!" << endl;
         num = 0;
         return true;
     }

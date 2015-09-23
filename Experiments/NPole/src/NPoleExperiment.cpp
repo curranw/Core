@@ -21,14 +21,14 @@ void NPoleExperiment::end_epoch()
 {
     if(m_domain->m_accumulate_data && m_accumulated_data.size() >= 100)
     {
-        if(tot_reward > -300 && good_data.size() < 50000)
+        if(tot_reward > 600 && good_data.size() < 50000)
         {
             for(unsigned int i = 0; i < m_accumulated_data.size(); i++)
             {
                 good_data.push_back(m_accumulated_data[i]);
             }
         }
-        if(tot_reward > -1000 && tot_reward < -500 && bad_data.size() < 50000)
+        if(tot_reward < 100 && bad_data.size() < 50000)
         {
             for(unsigned int i = 0; i < m_accumulated_data.size(); i++)
             {
@@ -36,8 +36,7 @@ void NPoleExperiment::end_epoch()
             }
         }
     }
-    if(current_iteration % 100 == 0) cout << m_learning_algorithm->get_table_size()<< "," << performance << endl;
-    tot_performance.push_back(performance);
+    if(current_iteration % 100 == 0) cout << m_learning_algorithm->get_table_size() << "," << performance << endl;
     performance = 0;
     IExperiment::end_epoch();
 }
@@ -52,8 +51,7 @@ void NPoleExperiment::output_results()
         if(bad_data.size() >= 50000) utils::to_csv(&bad_data, "converged_state_data_pole_bad");
     }
     m_domain->calculate_pos(true);
-    vector<double> moving_average = utils::moving_average(&tot_performance, double(m_exp_args->num_epochs)/100);
-    utils::to_csv(&moving_average, "Performance_Test");
+
 }
 
 

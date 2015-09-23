@@ -5,7 +5,7 @@ import csv
 import math
 import sys
 
-num_links = int(sys.argv[1])
+num_links = int(sys.argv[1]) + 1
 all_positions = list()
 with open('data.csv', 'rb') as csvfile:
      spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
@@ -31,13 +31,13 @@ while 1:
         pos_y.append(float(all_positions[t][1]))
         t = t + 1
     if it == 0:    
-        points, = ax.plot(pos_x+[0], pos_y+[0], marker='o', linestyle='None')
-        ax.set_xlim(-1*(num_links+1), 1*(num_links+1)) 
-        ax.set_ylim(-1*(num_links+1), 1*(num_links+1)) 
+        points, = ax.plot(pos_x, pos_y, marker='o', linestyle='None')
+        ax.set_xlim(-1, 1) 
+        ax.set_ylim(-1, 1) 
     else:
-        points.set_data(pos_x+[0], pos_y+[0])
+        points.set_data(pos_x, pos_y)
     it = it + 1
     pos_x = []
     pos_y = []
-    if it % 10 == 0:
-        plt.pause(0.1)
+    #if it % 10 == 0:
+    plt.pause(0.01)

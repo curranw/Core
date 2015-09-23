@@ -14,6 +14,8 @@ void PCAInterface::solve()
 {
     pca->set_do_normalize(true);
     pca->solve();
+//    pca->save("Blackjack");
+//    exit(1);
     //pca->set_do_normalize(false);
 }
 

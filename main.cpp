@@ -20,14 +20,15 @@ int main()
 //    NPole* p = new NPole();
 //    p->init();
 //    p->compute_possible_actions();
-//    p->step(0);
-//    p->step(0);
 //    int action = 0;
-//    for(unsigned int i = 0; i < 1000; i++)
+//    p->step(0);
+//    p->step(0);
+//    p->step(0);
+//    for(unsigned int i = 0; i < 10000; i++)
 //    {
 //        if(i % 10 == 0 && i != 0) action++;
 //        if(action > 10) action = 0;
-//        p->step(0);
+//        p->step(1);
 //    }
 //    exit(1);
     run_experiment();

@@ -19,12 +19,14 @@ class NPoleExperimentPCA : public IExperiment
 public:
     NPoleExperimentPCA(NPole* domain, QTilesReuse* learning_algorithm, NPoleExperimentPCAArgs* exp_args);
     virtual ~NPoleExperimentPCA();
-
+    void step();
     void init();
     void end_epoch();
+    NPole* m_domain;
 
 private:
     NPoleExperimentPCAArgs* m_exp_args;
     QTilesReuse* m_learning_algorithm;
     int current_dimension;
+    double performance;
 };

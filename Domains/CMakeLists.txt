@@ -5,6 +5,8 @@ add_subdirectory(IDomain)
 add_subdirectory(MountainCar)
 add_subdirectory(NArm)
 add_subdirectory(NPole)
+add_subdirectory(Blackjack)
+
 
 add_library(Domains STATIC)
-target_link_libraries(Domains IDomain MTNCAR NARM NPOLE)
+target_link_libraries(Domains IDomain MTNCAR NARM NPOLE BLACKJACK)

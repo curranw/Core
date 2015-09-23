@@ -25,12 +25,14 @@ set(IDOMAIN_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Domains/IDomain/include)
 set(MTN_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Domains/MountainCar/include)
 set(NARM_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Domains/NArm/include)
 set(NPOLE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Domains/NPole/include)
+set(BLACKJACK_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Domains/Blackjack/include)
 
 #Experiments
 set(IEXP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Experiments/IExperiment/include)
 set(MTNCAREXP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Experiments/MountainCar/include)
 set(NARMEXP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Experiments/NArm/include)
 set(NPOLEEXP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Experiments/NPole/include)
+set(BLACKJACKEXP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Experiments/Blackjack/include)
 set(UTILS_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Experiments/Utils/include)
 
 set(SRC_LIST
@@ -52,10 +54,10 @@ include_directories(${INCLUDE_DIR} ${SRC_DIR})
 include_directories(${TILES_INCLUDE_DIR} ${ANN_INCLUDE_DIR} ${PCA_INCLUDE_DIR})
 
 #Domains
-include_directories(${MTN_INCLUDE_DIR} ${IDOMAIN_INCLUDE_DIR} ${NARM_INCLUDE_DIR} ${NPOLE_INCLUDE_DIR})
+include_directories(${MTN_INCLUDE_DIR} ${IDOMAIN_INCLUDE_DIR} ${NARM_INCLUDE_DIR} ${NPOLE_INCLUDE_DIR} ${BLACKJACK_INCLUDE_DIR})
 
 #Experiments
-include_directories(${MTNCAREXP_INCLUDE_DIR} ${NARMEXP_INCLUDE_DIR} ${UTILS_INCLUDE_DIR} ${IEXP_INCLUDE_DIR} ${NPOLEEXP_INCLUDE_DIR})
+include_directories(${MTNCAREXP_INCLUDE_DIR} ${NARMEXP_INCLUDE_DIR} ${UTILS_INCLUDE_DIR} ${IEXP_INCLUDE_DIR} ${NPOLEEXP_INCLUDE_DIR} ${BLACKJACKEXP_INCLUDE_DIR})
 
 #Learning Algorithms
 include_directories(${PCAI_INCLUDE_DIR} ${QKNN_INCLUDE_DIR} ${QTILES_INCLUDE_DIR} ${ILEARNINGALGORITHM_INCLUDE_DIR} ${QTILESREUSE_INCLUDE_DIR})
@@ -70,4 +72,4 @@ add_subdirectory(Experiments)
 
 
 add_executable(${PROJECT_NAME} ${SRC_LIST} ${HEADER_LIST})
-target_link_libraries(${PROJECT_NAME} PCAInterface LearningAlgorithms MTNCAR Experiments NARM NPOLE)
+target_link_libraries(${PROJECT_NAME} PCAInterface LearningAlgorithms MTNCAR Experiments NARM NPOLE BLACKJACK)

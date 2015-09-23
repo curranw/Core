@@ -2,7 +2,16 @@
 
 void AAAI2015::setup_experiments()
 {
-    normal_learning_pole("Pole_Test");
+//    for(unsigned int i = 0; i < 19; i++)
+//    {
+//        normal_learning_blackjack("Blackjack_Normal");
+//    }
+    for(unsigned int i = 0; i < 20; i++)
+    {
+        pca_learning_blackjack("converged_state_data_blackjack_good_2.csv", -1, "test_blackjack_new",1, true);
+    }
+    //pca_learning_pole("converged_state_data_pole_good.csv", -1, "test_pole",1, true);
+    //normal_learning_pole("Pole_Test");
 //    for(unsigned int i = 0; i < 3; i++)
 //    {
 //        normal_learning4d("Normal_6");
@@ -342,18 +351,26 @@ void AAAI2015::normal_learning_pole(string save_file)
     learning_args->num_tiles = 10;
 
     vector<double> resolution;
-    resolution.push_back(0.1);
-    resolution.push_back(0.1);
-    resolution.push_back(0.1);
-    resolution.push_back(0.1);
+    resolution.push_back(0.05);
+    resolution.push_back(0.05);
+    resolution.push_back(0.05);
+    resolution.push_back(0.05);
+//    resolution.push_back(0.05);
+//    resolution.push_back(0.05);
+//    resolution.push_back(0.1);
+//    resolution.push_back(0.1);
+//    resolution.push_back(0.05);
+//    resolution.push_back(0.05);
+//    resolution.push_back(0.05);
+//    resolution.push_back(0.05);
     learning_args->resolution = resolution;
 
     NPole* domain = new NPole();
 
     NPoleExperimentArgs* experiment_args = new NPoleExperimentArgs();
     experiment_args->demonstrations = true;
-    experiment_args->num_steps = 4000;
-    experiment_args->num_epochs = 10000;
+    experiment_args->num_steps = 1000;
+    experiment_args->num_epochs = 100000;
     experiment_args->save_file = save_file;
 
     QTiles* learning_algorithm = new QTiles(learning_args);
@@ -363,3 +380,136 @@ void AAAI2015::normal_learning_pole(string save_file)
     delete exp;
 
 }
+
+void AAAI2015::pca_learning_pole(string pca_file, int amount, string save_file, int dim, bool iterative)
+{
+    QTilesReuseArgs* learning_args = new QTilesReuseArgs();
+    for(int i = 0; i < 6; i++)
+    {
+        QTilesArguments* learning_tiles_args = new QTilesArguments();
+        learning_tiles_args->alpha = 0.1;
+        learning_tiles_args->gamma = 0.99;
+        learning_tiles_args->eligability = false;
+        learning_tiles_args->num_tiles = 10;
+        QTiles* learning_algorithm = new QTiles(learning_tiles_args);
+
+        learning_args->learning_algorithms.push_back(learning_algorithm);
+    }
+    learning_args->pca_file = pca_file;
+    learning_args->amount = amount;
+
+    vector<double> resolution;
+    resolution.push_back(0.05);
+    resolution.push_back(0.05);
+    resolution.push_back(0.05);
+    resolution.push_back(0.05);
+//    resolution.push_back(0.1);
+//    resolution.push_back(0.1);
+    learning_args->resolution = resolution;
+
+    QTilesReuse* learning_algorithm = new QTilesReuse(resolution.size(), learning_args);
+
+
+    NPole* domain = new NPole();
+
+    NPoleExperimentPCAArgs* experiment_args = new NPoleExperimentPCAArgs();
+    experiment_args->demonstrations = false;
+    experiment_args->num_steps = 1000;
+    experiment_args->num_epochs = 100000;
+    experiment_args->save_file = save_file;
+    experiment_args->iterative = iterative;
+    experiment_args->start_dimension = dim;
+
+    NPoleExperimentPCA* exp = new NPoleExperimentPCA(domain, learning_algorithm, experiment_args);
+    exp->run_experiment();
+
+    delete exp;
+
+}
+
+void AAAI2015::normal_learning_blackjack(string save_file)
+{
+    QTilesArguments* learning_args = new QTilesArguments();
+    learning_args->alpha = 0.1;
+    learning_args->gamma = 0.99;
+    learning_args->eligability = false;
+    learning_args->num_tiles = 16;
+
+    vector<double> resolution;
+    resolution.push_back(0.05);
+    resolution.push_back(0.1);
+    resolution.push_back(0.5);
+
+    //Digits
+//    resolution.push_back(0.1);
+//    resolution.push_back(0.1);
+//    resolution.push_back(0.1);
+//    resolution.push_back(0.1);
+
+    learning_args->resolution = resolution;
+
+    Blackjack* domain = new Blackjack();
+
+    BlackjackExperimentArgs* experiment_args = new BlackjackExperimentArgs();
+    experiment_args->demonstrations = false;
+    experiment_args->num_steps = 1000;
+    experiment_args->num_epochs = 100000;
+    experiment_args->save_file = save_file;
+
+    QTiles* learning_algorithm = new QTiles(learning_args);
+
+    BlackjackExperiment* exp = new BlackjackExperiment(domain, learning_algorithm, experiment_args);
+    exp->run_experiment();
+    delete exp;
+
+}
+
+void AAAI2015::pca_learning_blackjack(string pca_file, int amount, string save_file, int dim, bool iterative)
+{
+    QTilesReuseArgs* learning_args = new QTilesReuseArgs();
+    for(int i = 0; i < 7; i++)
+    {
+        QTilesArguments* learning_tiles_args = new QTilesArguments();
+        learning_tiles_args->alpha = 0.1;
+        learning_tiles_args->gamma = 1;
+        learning_tiles_args->eligability = false;
+        learning_tiles_args->num_tiles = 16;
+        QTiles* learning_algorithm = new QTiles(learning_tiles_args);
+
+        learning_args->learning_algorithms.push_back(learning_algorithm);
+    }
+    learning_args->pca_file = pca_file;
+    learning_args->amount = amount;
+
+    vector<double> resolution;
+    resolution.push_back(0.05);
+    resolution.push_back(0.1);
+    resolution.push_back(0.5);
+
+    //Digits
+    resolution.push_back(0.1);
+    resolution.push_back(0.1);
+    resolution.push_back(0.1);
+    resolution.push_back(0.1);
+    learning_args->resolution = resolution;
+
+    QTilesReuse* learning_algorithm = new QTilesReuse(resolution.size(), learning_args);
+
+
+    Blackjack* domain = new Blackjack();
+
+    BlackjackExperimentPCAArgs* experiment_args = new BlackjackExperimentPCAArgs();
+    experiment_args->demonstrations = false;
+    experiment_args->num_steps = 1000;
+    experiment_args->num_epochs = 100000;
+    experiment_args->save_file = save_file;
+    experiment_args->iterative = iterative;
+    experiment_args->start_dimension = dim;
+
+    BlackjackExperimentPCA* exp = new BlackjackExperimentPCA(domain, learning_algorithm, experiment_args);
+    exp->run_experiment();
+
+    delete exp;
+
+}
+

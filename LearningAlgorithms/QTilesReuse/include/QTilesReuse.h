@@ -42,7 +42,7 @@ public:
     int cur_dimension, total_dimensions;
     vector<QTiles*> m_learning_algorithms;
     set<int> used_projections;
-
+    QTilesReuseArgs* m_args;
     vector<vector<double> > ranges_min_all, ranges_max_all;
     double num_similar;
     double num_updates;
