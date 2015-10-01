@@ -3,6 +3,7 @@
 #include <map>
 #include <vector>
 #include <QElement.h>
+#include <iostream>
 using namespace std;
 
 class ILearningArguments
