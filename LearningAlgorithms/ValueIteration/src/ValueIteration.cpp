@@ -107,10 +107,9 @@ void ValueIteration::calculate_states()
 
 void ValueIteration::calculate_solution()
 {
-    double eps = 0.001;
+    double eps = 0.01;
     while(true)
     {
-        cout << "Start" << endl;
         arma::Mat<double> Q = R + .99 * P * V;
         arma::Mat<double> old_V = V;
         for(unsigned int i = 0; i < V.size(); i++)
@@ -148,5 +147,10 @@ void ValueIteration::calculate_solution()
 
     }
     Q_best = R + .99 * P * V;
+}
+
+map<QElement::State, int> *ValueIteration::get_state_to_ind()
+{
+    return &state_to_ind;
 }
 

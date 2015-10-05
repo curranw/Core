@@ -17,6 +17,8 @@ public:
     void calculate_states();
     void calculate_solution();
 
+
+    map<QElement::State, int>* get_state_to_ind();
     //vector<double> m_min_ranges, m_max_ranges, m_resolution;
    // vector<int> m_possible_actions;
 

@@ -3,6 +3,7 @@
 #include <IExperiment.h>
 #include <RobotChasing.h>
 #include <ValueIteration.h>
+#include <RMax.h>
 #include <armadillo>
 
 using namespace std;
@@ -17,6 +18,7 @@ class RobotChasingExperiment : public IExperiment
 {
 public:
     RobotChasingExperiment(RobotChasing* domain, ValueIteration* learning_algorithm, RobotChasingExperimentArgs* exp_args);
+    RobotChasingExperiment(RobotChasing* domain, RMax* learning_algorithm, RobotChasingExperimentArgs* exp_args);
     void end_epoch();
     void output_results();
     void init();
@@ -24,7 +26,7 @@ public:
 
 private:
     RobotChasingExperimentArgs* m_exp_args;
-    ValueIteration* m_learning_algorithm;
+    ILearningAlgorithm* m_learning_algorithm;
     RobotChasing* m_domain;
     vector<vector<double> > good_data;
     vector<vector<double> > bad_data;

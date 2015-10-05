@@ -11,18 +11,29 @@ RobotChasingExperiment::RobotChasingExperiment(RobotChasing *domain, ValueIterat
 
 }
 
+RobotChasingExperiment::RobotChasingExperiment(RobotChasing* domain, RMax* learning_algorithm, RobotChasingExperimentArgs* exp_args)
+    : IExperiment(domain, learning_algorithm, exp_args)
+{
+    m_learning_algorithm = learning_algorithm;
+    m_domain = domain;
+    m_exp_args = exp_args;
+    if(m_exp_args->demonstrations) domain->m_accumulate_data = true;
+    performance = 0;
+
+}
+
 void RobotChasingExperiment::init()
 {
     IExperiment::init();
 
-    arma::Mat<double> probs = m_domain->calculate_probabilities();
-    arma::Mat<double> rewards = m_domain->calculate_rewards();
+//    arma::Mat<double> probs = m_domain->calculate_probabilities();
+//    arma::Mat<double> rewards = m_domain->calculate_rewards();
 
 
-    m_learning_algorithm->update_model(rewards, probs);
+//    m_learning_algorithm->update_model(rewards, probs);
 
-    m_learning_algorithm->calculate_states();
-    m_learning_algorithm->calculate_solution();
+//    m_learning_algorithm->calculate_states();
+//    m_learning_algorithm->calculate_solution();
 
 
 }
