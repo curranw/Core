@@ -2,16 +2,16 @@
 
 RobotChasing::RobotChasing()
 {
-    m_max_x = 5;
-    m_max_y = 5;
+    m_max_x = 1;
+    m_max_y = 1;
 }
 
 void RobotChasing::init()
 {
     m_agent_x = 0;
     m_agent_y = 0;
-    m_robot_x = 5;
-    m_robot_y = 5;
+    m_robot_x = rand() % m_max_x + 1;
+    m_robot_y = rand() % m_max_y + 1;
 }
 
 vector<double> RobotChasing::get_state()
@@ -43,23 +43,23 @@ void RobotChasing::step(int action)
 
     if(m_agent_x == m_robot_x && m_agent_y == m_robot_y) return;
     //Robot
-    a = m_action_mapping[rand() % 4];
-    //Down
-    if(a[0] == 0) m_robot_y += 1;
-    //Left
-    if(a[0] == 1) m_robot_x -= 1;
-    //Right
-    if(a[0] == 2) m_robot_x += 1;
-    //Up
-    if(a[0] == 3) m_robot_y -= 1;
-    if(m_robot_y < 0) m_robot_y = 0;
-    if(m_robot_y > m_max_y) m_robot_y = m_max_y;
-    if(m_robot_x < 0) m_robot_x = 0;
-    if(m_robot_x > m_max_x) m_robot_x = m_max_y;
+//    a = m_action_mapping[rand() % 4];
+//    //Down
+//    if(a[0] == 0) m_robot_y += 1;
+//    //Left
+//    if(a[0] == 1) m_robot_x -= 1;
+//    //Right
+//    if(a[0] == 2) m_robot_x += 1;
+//    //Up
+//    if(a[0] == 3) m_robot_y -= 1;
+//    if(m_robot_y < 0) m_robot_y = 0;
+//    if(m_robot_y > m_max_y) m_robot_y = m_max_y;
+//    if(m_robot_x < 0) m_robot_x = 0;
+//    if(m_robot_x > m_max_x) m_robot_x = m_max_y;
 
-    cout << m_agent_x << "," << m_agent_y << endl;
+    //cout << m_agent_x << "," << m_agent_y << endl;
     //cout << "-------" << endl;
-    cout << m_robot_x << "," << m_robot_y << endl;
+    //cout << m_robot_x << "," << m_robot_y << endl;
 
 }
 
@@ -87,7 +87,7 @@ bool RobotChasing::end_of_episode()
 {
     if(m_agent_x == m_robot_x && m_agent_y == m_robot_y)
     {
-        cout << "Done" << endl;
+        //cout << "Done" << endl;
         return true;
     }
     return false;
