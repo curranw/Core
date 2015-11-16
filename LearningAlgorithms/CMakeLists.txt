@@ -7,6 +7,7 @@ add_subdirectory(QKNN)
 add_subdirectory(QTilesReuse)
 add_subdirectory(ValueIteration)
 add_subdirectory(RMax)
+add_subdirectory(FittedRMax)
 
 add_library(LearningAlgorithms STATIC)
-target_link_libraries(LearningAlgorithms QKNN QTILES QTILESREUSE ILearningAlgorithm TILES RMAX)
+target_link_libraries(LearningAlgorithms QKNN QTILES QTILESREUSE ILearningAlgorithm TILES RMAX FITTEDRMAX)
