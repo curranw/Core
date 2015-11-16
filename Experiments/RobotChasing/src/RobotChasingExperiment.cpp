@@ -22,6 +22,17 @@ RobotChasingExperiment::RobotChasingExperiment(RobotChasing* domain, RMax* learn
 
 }
 
+RobotChasingExperiment::RobotChasingExperiment(RobotChasing* domain, FittedRMax* learning_algorithm, RobotChasingExperimentArgs* exp_args)
+    : IExperiment(domain, learning_algorithm, exp_args)
+{
+    m_learning_algorithm = learning_algorithm;
+    m_domain = domain;
+    m_exp_args = exp_args;
+    if(m_exp_args->demonstrations) domain->m_accumulate_data = true;
+    performance = 0;
+
+}
+
 void RobotChasingExperiment::init()
 {
     IExperiment::init();

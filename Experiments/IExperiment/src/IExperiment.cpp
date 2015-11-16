@@ -32,6 +32,7 @@ void IExperiment::init()
 
     //Variable Bookkeeping
     current_iteration = 0;
+    m_learning_algorithm->init();
 }
 
 
@@ -95,7 +96,7 @@ void IExperiment::get_reward()
 
 void IExperiment::output_results()
 {
-    vector<double> moving_average = utils::moving_average(&m_rewards, double(m_exp_args->num_epochs)/100.0);
+    vector<double> moving_average = utils::moving_average(&m_rewards, double(m_exp_args->num_epochs)/20.0);
     utils::to_csv(&moving_average, m_exp_args->save_file);
 }
 
@@ -111,7 +112,7 @@ void IExperiment::end_epoch()
     if(m_domain->m_accumulate_data) m_accumulated_data.clear();
 
     current_iteration++;
-    if(current_iteration % 100 == 0)
+    if(current_iteration % 1 == 0)
         cout << current_iteration << ", " << tot_reward << endl;
 
     tot_reward = 0;

@@ -1,13 +1,41 @@
 #include "RMax.h"
 
-RMax::RMax(ILearningArguments *args) : ILearningAlgorithm(args)
+RMax::RMax(RMaxArgs *args) : ILearningAlgorithm(args)
 {
     R_max = 5;
-    VI = new ValueIteration(args);
+    ValueIterationArgs* VI_args = new ValueIterationArgs();
+    VI_args->resolution = args->resolution;
+    VI = new ValueIteration(VI_args);
 }
 
 pair<QElement::Action, double> RMax::get_action(QElement::State s)
 {
+
+    state_to_ind = VI->get_state_to_ind();
+    arma::Mat<double> R_temp = R_estimate;
+    arma::Mat<double> P_temp = P_estimate;
+    for(map<QElement::State, int>::iterator it = state_to_ind->begin(); it != state_to_ind->end(); it++)
+    {
+        int cur_ind = it->second;
+        for(unsigned int a = 0; a < m_possible_actions.size(); a++)
+        {
+            int cur_sa = cur_ind * m_possible_actions.size() + a;
+            if(N_estimate[cur_sa] < 5)
+            {
+                R_temp[cur_sa] = R_max;
+            }
+            for(map<QElement::State, int>::iterator it2 = state_to_ind->begin(); it2 != state_to_ind->end(); it2++)
+            {
+                int cur_ind2 = it2->second;
+                P_temp(cur_sa, cur_ind2) = 0;
+            }
+            P_temp(cur_sa, cur_ind) = 1;
+        }
+    }
+
+    VI->update_model(&R_temp, &P_temp);
+
+
     pair<QElement::Action, double> action_value = VI->get_action(s);
     //cout << action_value.first << endl;
     return action_value;
@@ -28,7 +56,7 @@ void RMax::set_possible_actions(vector<int> possible_actions)
     N_estimate.fill(0);
     P_estimate.set_size(state_to_ind->size() * m_possible_actions.size(),state_to_ind->size());
     P_estimate.fill(0);
-    VI->update_model(R_estimate, P_estimate);
+    VI->update_model(&R_estimate, &P_estimate);
     VI->calculate_solution();
 }
 
@@ -71,27 +99,6 @@ void RMax::update(QUpdate update)
         P_estimate(ind_action, cur_ind) = D_estimate(ind_action, cur_ind)/N_estimate(ind_action);
     }
 
-    for(map<QElement::State,int>::iterator state_it = state_to_ind->begin(); state_it != state_to_ind->end(); state_it++)
-    {
-        int cur_s = state_it->second;
-        for(unsigned int a = 0; a < m_possible_actions.size(); a++)
-        {
-            int cur_sa = cur_s * m_possible_actions.size() + a;
-            if(N_estimate(cur_sa) < 5)
-            {
-                R_estimate(cur_sa) = R_max;
-
-                for(map<QElement::State,int>::iterator it = state_to_ind->begin(); it != state_to_ind->end(); it++)
-                {
-                    int cur_ind = it->second;
-                    //int cur_ind = state_to_ind->find(s)->second;
-                    P_estimate(cur_sa, cur_ind) = 0;
-                }
-                P_estimate(cur_sa, cur_s) = 1;
-            }
-        }
-    }
-    VI->update_model(R_estimate, P_estimate);
 
     static int it = 0;
     it++;
@@ -105,7 +112,5 @@ void RMax::update(QUpdate update)
 
         //exit(1);
     }
-
-    VI->calculate_solution();
 
 }

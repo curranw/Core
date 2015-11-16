@@ -6,6 +6,7 @@
 #include <MountainCar3DScaled.h>
 #include <QTilesReuse.h>
 #include <QTiles.h>
+#include <FittedRMax.h>
 
 using namespace std;
 
@@ -22,13 +23,16 @@ public:
     MountainCarExperiment(MountainCar3DScaled* domain, QTiles* learning_algorithm, MountainCarExperimentArgs* exp_args);
     MountainCarExperiment(MountainCar4D* domain, QTiles* learning_algorithm, MountainCarExperimentArgs* exp_args);
     MountainCarExperiment(MountainCar *domain, QTiles *learning_algorithm, MountainCarExperimentArgs* exp_args);
+    MountainCarExperiment(MountainCar *domain, FittedRMax *learning_algorithm, MountainCarExperimentArgs* exp_args);
+    MountainCarExperiment(MountainCar3D *domain, FittedRMax *learning_algorithm, MountainCarExperimentArgs* exp_args);
     void end_epoch();
     void output_results();
     virtual ~MountainCarExperiment();
 
 private:
     MountainCarExperimentArgs* m_exp_args;
-    QTiles* m_learning_algorithm;
+    //QTiles* m_learning_algorithm;
+    ILearningAlgorithm* m_learning_algorithm;
     vector<vector<double> > good_data;
     vector<vector<double> > bad_data;
 

@@ -4,6 +4,11 @@ ILearningAlgorithm::ILearningAlgorithm(ILearningArguments* args)
 
 }
 
+void ILearningAlgorithm::init()
+{
+
+}
+
 void ILearningAlgorithm::set_ranges(vector<double> min_ranges, vector<double> max_ranges)
 {
     m_min_ranges = min_ranges;

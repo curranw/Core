@@ -2,14 +2,17 @@
 
 void AAAI2015::setup_experiments()
 {
-//    for(unsigned int i = 0; i < 19; i++)
+
+    //normal_learning_fitted_rmax("Mountain Car");
+    normal_learning4d_fitted_rmax("Mountain Car");
+    //    for(unsigned int i = 0; i < 19; i++)
 //    {
 //        normal_learning_blackjack("Blackjack_Normal");
 //    }
-    for(unsigned int i = 0; i < 20; i++)
-    {
-        pca_learning_blackjack("converged_state_data_blackjack_good_2.csv", -1, "test_blackjack_new",1, true);
-    }
+//    for(unsigned int i = 0; i < 20; i++)
+//    {
+//        pca_learning_blackjack("converged_state_data_blackjack_good_2.csv", -1, "test_blackjack_new",1, true);
+//    }
     //pca_learning_pole("converged_state_data_pole_good.csv", -1, "test_pole",1, true);
     //normal_learning_pole("Pole_Test");
 //    for(unsigned int i = 0; i < 3; i++)
@@ -197,6 +200,58 @@ void AAAI2015::normal_learning_scaled(string save_file)
     experiment_args->save_file = save_file;
 
     QTiles* learning_algorithm = new QTiles(learning_args);
+
+    MountainCarExperiment* exp = new MountainCarExperiment(domain, learning_algorithm, experiment_args);
+    exp->run_experiment();
+    delete exp;
+}
+
+void AAAI2015::normal_learning_fitted_rmax(string save_file)
+{
+    FittedRMaxArgs* learning_args = new FittedRMaxArgs();
+    learning_args->gamma = .99;
+    vector<double> resolution;
+    resolution.push_back(0.12);
+    resolution.push_back(0.0140);
+    learning_args->resolution = resolution;
+    FittedRMax* learning_algorithm = new FittedRMax(learning_args);
+
+    MountainCar* domain = new MountainCar();
+
+    MountainCarExperimentArgs* experiment_args = new MountainCarExperimentArgs();
+    experiment_args->demonstrations = false;
+    experiment_args->num_steps = 300;
+    experiment_args->num_epochs = 500;
+    experiment_args->save_file = save_file;
+
+
+    MountainCarExperiment* exp = new MountainCarExperiment(domain, learning_algorithm, experiment_args);
+    exp->run_experiment();
+    delete exp;
+}
+
+void AAAI2015::normal_learning4d_fitted_rmax(string save_file)
+{
+    FittedRMaxArgs* learning_args = new FittedRMaxArgs();
+    learning_args->gamma = .99;
+    vector<double> resolution;
+    //resolution.push_back(0.1);
+    //resolution.push_back(0.01);
+    resolution.push_back(0.12);
+    resolution.push_back(0.12);
+    resolution.push_back(0.035);
+    resolution.push_back(0.035);
+    learning_args->resolution = resolution;
+    FittedRMax* learning_algorithm = new FittedRMax(learning_args);
+
+    MountainCar3D* domain = new MountainCar3D();
+
+    MountainCarExperimentArgs* experiment_args = new MountainCarExperimentArgs();
+    experiment_args->demonstrations = false;
+    experiment_args->num_steps = 300;
+    experiment_args->num_epochs = 500;
+    experiment_args->save_file = save_file;
+
 
     MountainCarExperiment* exp = new MountainCarExperiment(domain, learning_algorithm, experiment_args);
     exp->run_experiment();

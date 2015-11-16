@@ -36,6 +36,25 @@ MountainCarExperiment::MountainCarExperiment(MountainCar *domain, QTiles *learni
     if(m_exp_args->demonstrations) domain->m_accumulate_data = true;
 }
 
+MountainCarExperiment::MountainCarExperiment(MountainCar *domain, FittedRMax *learning_algorithm, MountainCarExperimentArgs *exp_args)
+    : IExperiment(domain, learning_algorithm, exp_args)
+{
+    m_learning_algorithm = learning_algorithm;
+    m_domain = domain;
+    m_exp_args = exp_args;
+    if(m_exp_args->demonstrations) domain->m_accumulate_data = true;
+}
+
+MountainCarExperiment::MountainCarExperiment(MountainCar3D *domain, FittedRMax *learning_algorithm, MountainCarExperimentArgs *exp_args)
+    : IExperiment(domain, learning_algorithm, exp_args)
+{
+    m_learning_algorithm = learning_algorithm;
+    m_domain = domain;
+    m_exp_args = exp_args;
+    if(m_exp_args->demonstrations) domain->m_accumulate_data = true;
+
+}
+
 void MountainCarExperiment::end_epoch()
 {
     if(m_domain->m_accumulate_data && m_accumulated_data.size() >= 100)
@@ -55,7 +74,7 @@ void MountainCarExperiment::end_epoch()
             }
         }
     }
-    if(current_iteration % 100 == 0) cout << m_learning_algorithm->get_table_size() << endl;
+    //if(current_iteration % 100 == 0) cout << m_learning_algorithm->get_table_size() << endl;
     IExperiment::end_epoch();
 }
 

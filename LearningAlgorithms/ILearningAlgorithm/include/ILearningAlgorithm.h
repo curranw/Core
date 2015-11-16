@@ -22,7 +22,7 @@ class ILearningAlgorithm
 {
 public:
     ILearningAlgorithm(ILearningArguments* args);
-
+    virtual void init();
     virtual pair<QElement::Action, double> get_action(QElement::State s) = 0;
     virtual void update(QUpdate update) = 0;
     virtual void set_possible_actions(vector<int> possible_actions);
