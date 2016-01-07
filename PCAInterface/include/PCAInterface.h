@@ -3,7 +3,6 @@
 #include <pca.h>
 #include <vector>
 
-
 using namespace std;
 class PCAInterface
 {
@@ -17,6 +16,7 @@ public:
     void solve();
     void add_data(vector<double> *data);
     void add_data(vector<vector<double> > *data);
+    void add_weights(vector<double> *weights);
     void set_projection_dimension(int projection_dimension);
     vector<double> transform_down(vector<double> *data);
     vector<double> transform_up(vector<double> *data);
@@ -27,4 +27,7 @@ public:
     vector<double> min;
     vector<double> max;
     vector<vector<double> > saved_data;
+
+    //tapkee::TapkeeOutput output;
+
 };

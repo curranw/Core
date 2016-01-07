@@ -1,3 +1,4 @@
+#pragma once
 #ifndef QTILES_H
 #define QTILES_H
 
@@ -11,7 +12,6 @@
 #include <iostream>
 #include <QElement.h>
 #include <ILearningAlgorithm.h>
-
 
 using namespace std;
 
@@ -29,7 +29,7 @@ public:
     void clear_trace();
     QTiles(QTilesArguments* args);
     pair<QElement::Action, double> get_action(QElement::State s);
-    map<QElement::Action, double> get_action_values(vector<QElement *> nearby_states);
+    unordered_map<QElement::Action, double> get_action_values(vector<QElement *> nearby_states);
     void update(QElement::State old_s, QElement::Action old_a, QElement::State new_s, double reward);
     int get_table_size();
 
@@ -38,15 +38,16 @@ public:
     map<int, vector<vector<double> >* > temp;
 
 
-    pair<QElement::Action, double> random_action(map<int, double> action_values);
+    pair<QElement::Action, double> random_action(unordered_map<int, double> action_values);
     void update(QUpdate update);
     void e_update(QUpdate update);
     vector<QElement*> old_states;
-    map<int, double> get_action_values(QElement::State s);
+    unordered_map<int, double> get_action_values(QElement::State s);
     void e_update(QElement::State state, QElement::Action action, QElement::State new_state,double reward);
     virtual ~QTiles();
     void end_epoch();
-
+    void init();
+    bool no_new;
 private:
     QTilesArguments* m_args;
     map<QElement*, vector<double> > eligability;
@@ -60,9 +61,10 @@ private:
     int count;
     int tilings;
     bool do_eligability;
+    int test_it;
 
     set<QElement*> ele_to_update;
-
+    unordered_map<QElement::Action, double> V_local;
 };
 
 #endif // QTILES_H

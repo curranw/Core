@@ -329,10 +329,10 @@ void Q_KNN::update(QElement::State old_s, QElement::Action old_a, QElement::Stat
 void Q_KNN::update(QUpdate update)
 {
     //Calculate values for new state.
-    map<int, double> new_action_values = update.next_state_action_values;
+    unordered_map<int, double> new_action_values = update.next_state_action_values;
     //Calculate delta
-    map<int, double>::const_iterator max_it;
-    for(map<int, double>::iterator it = new_action_values.begin(); it != new_action_values.end(); it++)
+    unordered_map<int, double>::const_iterator max_it;
+    for(unordered_map<int, double>::iterator it = new_action_values.begin(); it != new_action_values.end(); it++)
     {
         if(it == new_action_values.begin()) max_it = it;
         else if (it->second > max_it->second) max_it = it;
@@ -356,10 +356,10 @@ void Q_KNN::e_update(QUpdate update)
     //static int it2;
     //if(it2++ % 2000 == 0) cout << it2 << "," << alpha << endl;
     //Calculate values for new state.
-    map<int, double> new_action_values = update.next_state_action_values;
+    unordered_map<int, double> new_action_values = update.next_state_action_values;
     //Calculate delta
-    map<int, double>::const_iterator max_it;
-    for(map<int, double>::iterator it = new_action_values.begin(); it != new_action_values.end(); it++)
+    unordered_map<int, double>::const_iterator max_it;
+    for(unordered_map<int, double>::iterator it = new_action_values.begin(); it != new_action_values.end(); it++)
     {
         if(it == new_action_values.begin()) max_it = it;
         else if (it->second > max_it->second) max_it = it;

@@ -5,6 +5,7 @@
  *      Author: Will Curran
  */
 
+#pragma once
 #ifndef Q_KNN_H_
 #define Q_KNN_H_
 

@@ -1,8 +1,9 @@
+#pragma once
 #ifndef QELEMENT_H
 #define QELEMENT_H
 
 #include <vector>
-
+#include <unordered_map>
 using namespace std;
 
 
@@ -22,7 +23,7 @@ public:
     double reward;
     QElement::State state, next_state;
     QElement::Action action;
-    map<int, double> next_state_action_values;
+    unordered_map<int, double> next_state_action_values;
     double old_value;
     vector<QElement*> states_to_update;
     vector<double> old_probabilities;

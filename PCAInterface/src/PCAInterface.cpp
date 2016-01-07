@@ -1,8 +1,8 @@
 #include <PCAInterface.h>
-
 PCAInterface::PCAInterface(int num_variables)
 {
     pca = new stats::pca(num_variables);
+
 }
 
 PCAInterface::~PCAInterface()
@@ -12,10 +12,10 @@ PCAInterface::~PCAInterface()
 
 void PCAInterface::solve()
 {
-    pca->set_do_normalize(true);
+    pca->set_do_normalize(false);
     pca->solve();
-//    pca->save("Blackjack");
-//    exit(1);
+    //pca->save("Swimmers");
+    //exit(1);
     //pca->set_do_normalize(false);
 }
 
@@ -26,6 +26,18 @@ void PCAInterface::add_data(vector<double>* data)
 
 void PCAInterface::add_data(vector<vector<double> >* data)
 {
+//    DenseMatrix a(data->at(0).size(), 5000);
+//    for(unsigned int i = 0; i < 5000; i++)
+//    {
+//        for(unsigned int j = 0; j < data->at(i).size(); j++)
+//        {
+//            a(j,i) = data->at(i).at(j);
+//        }
+//    }
+
+//    TapkeeOutput output = tapkee::initialize().withParameters((method=tapkee::PCA, target_dimension=1, eigen_method=tapkee::Randomized)).embedUsing(a);
+
+
 //    int dim = data->at(0).size();
 //    max.assign(dim,0);
 //    min.assign(dim,0);
@@ -64,7 +76,23 @@ void PCAInterface::add_data(vector<vector<double> >* data)
     {
         pca->add_record(*it);
     }
+//    solve();
+//    set_projection_dimension(1);
+//    vector<double> out_old = transform_down(&data->at(0));
+//    DenseMatrix test = DenseMatrix(6,1);
+//    for(unsigned int i = 0; i < 6; i++)
+//    {
+//        test(i,0) = a(i,0);
+//    }
+//    DenseMatrix out = output.projection.implementation->project(test);
+//    pca->save("Swimmers");
+//    exit(1);
     saved_data = *data;
+}
+
+void PCAInterface::add_weights(vector<double> *weights)
+{
+    pca->set_weights(*weights);
 }
 
 void PCAInterface::set_projection_dimension(int projection_dimension)

@@ -8,7 +8,8 @@ add_subdirectory(NArm)
 add_subdirectory(NPole)
 add_subdirectory(Blackjack)
 add_subdirectory(RobotChasing)
+add_subdirectory(Swimmers)
 
 add_library(Experiments STATIC)
-target_link_libraries(Experiments MountainCarExperiments ExperimentUtils NArmExperiments NPoleExperiments BlackjackExperiments RobotChaseExperiments)
+target_link_libraries(Experiments MountainCarExperiments ExperimentUtils NArmExperiments NPoleExperiments BlackjackExperiments RobotChaseExperiments SwimmersExperiments)
 

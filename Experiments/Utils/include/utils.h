@@ -15,6 +15,7 @@ public:
     utils();
     static vector<double> moving_average(vector<double>* data, int bin_size);
     static void to_csv(vector<double>* data, string name);
+    static void to_csv(vector<int>* data, string name);
     static void to_csv(vector<vector<double> >* data, string name);
     static vector<vector<double> > read_csv(string name);
 

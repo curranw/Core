@@ -7,7 +7,7 @@ add_subdirectory(NArm)
 add_subdirectory(NPole)
 add_subdirectory(Blackjack)
 add_subdirectory(RobotChasing)
-
+add_subdirectory(Swimmers)
 
 add_library(Domains STATIC)
 target_link_libraries(Domains IDomain MTNCAR NARM NPOLE BLACKJACK)

@@ -55,7 +55,10 @@ void QTilesReuse::set_projection_dimension(int projection_dimension)
         compute_all_states();
         pca_interface->set_projection_dimension(projection_dimension);
     }
-
+    if(projection_dimension != 1)
+    {
+        m_learning_algorithms[cur_dimension-2]->no_new = true;
+    }
     if(projection_dimension != total_dimensions)
     {
         for(unsigned int i = 0; i < cur_dimension; i++)
@@ -63,8 +66,19 @@ void QTilesReuse::set_projection_dimension(int projection_dimension)
             //temp_resolution.push_back(abs(down_range_max[i] - down_range_min[i])/((total_dimensions-(cur_dimension-1) ) *10));
             //temp_resolution.push_back(abs(ranges_max_all[projection_dimension-1][i] - ranges_min_all[projection_dimension-1][i])/(50));
             //temp_resolution.push_back(abs(1.0 - 0.0)/(10));
+            double temp = (m_max_ranges[i] - m_min_ranges[i])/m_args->resolution[i];
+            cout << temp << endl;
+            if(i == 0) temp_resolution.push_back(abs(1.0 - 0.0)/(82.0));
+            if(i == 1) temp_resolution.push_back(abs(1.0 - 0.0)/(10.0));
+            if(i == 2) temp_resolution.push_back(abs(1.0 - 0.0)/(4.0));
+            if(i == 3) temp_resolution.push_back(abs(1.0 - 0.0)/(1.0));
+            if(i == 4) temp_resolution.push_back(abs(1.0 - 0.0)/(1.0));
+            if(i == 5) temp_resolution.push_back(abs(1.0 - 0.0)/(1.0));
+            if(i == 6) temp_resolution.push_back(abs(1.0 - 0.0)/(1.0));
+            if(i == 7) temp_resolution.push_back(abs(1.0 - 0.0)/(1.0));
+//            temp_resolution.push_back(abs(1.0 - 0.0)/15.0);
 
-            temp_resolution.push_back(abs(1.0 - 0.0)/(10.0));
+
 
 
         }
@@ -73,6 +87,7 @@ void QTilesReuse::set_projection_dimension(int projection_dimension)
     }
     else
     {
+        //Test that this actually happens!!!
         m_resolution.clear();
         for(unsigned int i = 0; i < total_dimensions; i++)
         {
@@ -89,7 +104,7 @@ void QTilesReuse::set_projection_dimension(int projection_dimension)
 
 pair<QElement::Action, double> QTilesReuse::get_action(QElement::State state)
 {
-    map<int, double> action_values = compute_action_values(&state);
+    unordered_map<int, double> action_values = compute_action_values(&state);
     pair<QElement::Action, double> action_to_value = m_learning_algorithms[cur_dimension-1]->random_action(action_values);
     update_args.action = action_to_value.first;
     update_args.old_value = action_to_value.second;
@@ -98,8 +113,8 @@ pair<QElement::Action, double> QTilesReuse::get_action(QElement::State state)
 
 void QTilesReuse::update(QElement::State* old_state, QElement::Action old_action, QElement::State* new_state, double reward)
 {
-    map<int, double>::const_iterator max_it;
-    map<int, double> new_action_values;
+    unordered_map<int, double>::const_iterator max_it;
+    unordered_map<int, double> new_action_values;
     for(set<int>::iterator used_proj_it = used_projections.begin(); used_proj_it != used_projections.end(); used_proj_it++)
     {
         int i = *used_proj_it;
@@ -114,10 +129,10 @@ void QTilesReuse::update(QElement::State* old_state, QElement::Action old_action
             down_state = pca_interface->transform_down(new_state);
         }
 
-        map<int, double> cur_action_values = m_learning_algorithms[i-1]->get_action_values(down_state);
+        unordered_map<int, double> cur_action_values = m_learning_algorithms[i-1]->get_action_values(down_state);
         if(i == cur_dimension && i != 1)
         {
-            for(map<int, double>::iterator it = new_action_values.begin(); it != new_action_values.end(); it++)
+            for(unordered_map<int, double>::iterator it = new_action_values.begin(); it != new_action_values.end(); it++)
             {
                 if(it == new_action_values.begin())
                 {
@@ -133,10 +148,10 @@ void QTilesReuse::update(QElement::State* old_state, QElement::Action old_action
             cout << "HI" << endl;
         }
 
-        for(map<int, double>::iterator it = cur_action_values.begin(); it != cur_action_values.end(); it++)
+        for(unordered_map<int, double>::iterator it = cur_action_values.begin(); it != cur_action_values.end(); it++)
         {
             if(i == cur_dimension) new_action_values[it->first] += it->second;
-            else new_action_values[it->first] += it->second + 100;
+            else new_action_values[it->first] += it->second;
         }
     }
 
@@ -146,9 +161,9 @@ void QTilesReuse::update(QElement::State* old_state, QElement::Action old_action
 
     if(cur_dimension != total_dimensions)
     {
-        map<int, double> action_values_old = compute_action_values(old_state);
+        unordered_map<int, double> action_values_old = compute_action_values(old_state);
         m_learning_algorithms[cur_dimension-1]->update(update_args);
-        map<int, double> action_values_new = compute_action_values(old_state);
+        unordered_map<int, double> action_values_new = compute_action_values(old_state);
 
         double max_old, max_new;
         int action_old, action_new;
@@ -184,8 +199,8 @@ void QTilesReuse::update(QElement::State* old_state, QElement::Action old_action
 
 void QTilesReuse::update(QUpdate update)
 {
-    map<int, double>::const_iterator max_it;
-    map<int, double> new_action_values;
+    unordered_map<int, double>::const_iterator max_it;
+    unordered_map<int, double> new_action_values;
     for(set<int>::iterator used_proj_it = used_projections.begin(); used_proj_it != used_projections.end(); used_proj_it++)
     {
         int i = *used_proj_it;
@@ -200,11 +215,11 @@ void QTilesReuse::update(QUpdate update)
             down_state = pca_interface->transform_down(&update.next_state);
         }
 
-        map<int, double> cur_action_values = m_learning_algorithms[i-1]->get_action_values(down_state);
+        unordered_map<int, double> cur_action_values = m_learning_algorithms[i-1]->get_action_values(down_state);
 
         if(i == cur_dimension && new_action_values.size() != 0)
         {
-            for(map<int, double>::iterator it = new_action_values.begin(); it != new_action_values.end(); it++)
+            for(unordered_map<int, double>::iterator it = new_action_values.begin(); it != new_action_values.end(); it++)
             {
                 if(it == new_action_values.begin())
                 {
@@ -219,10 +234,10 @@ void QTilesReuse::update(QUpdate update)
             //update.reward += new_value;
         }
 
-        for(map<int, double>::iterator it = cur_action_values.begin(); it != cur_action_values.end(); it++)
+        for(unordered_map<int, double>::iterator it = cur_action_values.begin(); it != cur_action_values.end(); it++)
         {
             if(i == cur_dimension) new_action_values[it->first] += it->second;
-            else new_action_values[it->first] += it->second + 1;
+            else new_action_values[it->first] += it->second;
         }
     }
 
@@ -232,9 +247,9 @@ void QTilesReuse::update(QUpdate update)
 
     if(cur_dimension != total_dimensions)
     {
-        map<int, double> action_values_old = compute_action_values(&update.state);
+        unordered_map<int, double> action_values_old = compute_action_values(&update.state);
         m_learning_algorithms[cur_dimension-1]->update(update_args);
-        map<int, double> action_values_new = compute_action_values(&update.state);
+        unordered_map<int, double> action_values_new = compute_action_values(&update.state);
 
         double max_old, max_new;
         int action_old, action_new;
@@ -271,6 +286,11 @@ void QTilesReuse::update(QUpdate update)
 
 void QTilesReuse::solve_manifold(vector<QElement::State>* states, int amount)
 {
+    if(!m_args->weight_file.empty())
+    {
+        vector<vector<double> > weights = utils::read_csv(m_args->weight_file);
+        pca_interface->add_weights(&weights.at(0));
+    }
     vector<QElement::State>* sub_states;
     if(amount == -1) pca_interface->add_data(states);
     else
@@ -286,9 +306,9 @@ void QTilesReuse::solve_manifold(vector<QElement::State>* states, int amount)
     pca_interface->solve();
 }
 
-map<int, double> QTilesReuse::compute_action_values(QElement::State* state)
+unordered_map<int, double> QTilesReuse::compute_action_values(QElement::State* state)
 {
-    map<int, double> action_values;
+    unordered_map<int, double> action_values;
     for(set<int>::iterator used_proj_it = used_projections.begin(); used_proj_it != used_projections.end(); used_proj_it++)
     {
         int i = *used_proj_it;
@@ -302,11 +322,11 @@ map<int, double> QTilesReuse::compute_action_values(QElement::State* state)
         {
             down_state = pca_interface->transform_down(state);
         }
-        map<int, double> cur_action_values = m_learning_algorithms[i-1]->get_action_values(down_state);
-        for(map<int, double>::iterator it = cur_action_values.begin(); it != cur_action_values.end(); it++)
+        unordered_map<int, double> cur_action_values = m_learning_algorithms[i-1]->get_action_values(down_state);
+        for(unordered_map<int, double>::iterator it = cur_action_values.begin(); it != cur_action_values.end(); it++)
         {
             if(i == cur_dimension) action_values[it->first] += it->second;
-            else action_values[it->first] += it->second + 1;
+            else action_values[it->first] += it->second;
         }
     }
 
@@ -438,7 +458,7 @@ bool QTilesReuse::is_converged()
     static int num = 0;
     if(val > .99) num++;
     else num = 0;
-    if(num == 25)
+    if(num == 5)
     {
         num = 0;
         return true;

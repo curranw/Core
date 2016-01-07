@@ -39,7 +39,18 @@ void utils::to_csv(vector<double>* data, string name)
         else file << data->at(i) << endl;
     }
     file.close();
+}
 
+void utils::to_csv(vector<int>* data, string name)
+{
+    name = fix_filename(name);
+    ofstream file (name);
+    for(unsigned int i = 0; i < data->size(); i++)
+    {
+        if(i != data->size()-1) file << data->at(i) << ",";
+        else file << data->at(i) << endl;
+    }
+    file.close();
 }
 
 void utils::to_csv(vector<vector<double> >* data, string name)
