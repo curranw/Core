@@ -153,6 +153,13 @@ void pca::set_do_bootstrap(bool do_bootstrap, long number, long seed) {
     energy_boot_.resize(num_bootstraps_);
 }
 
+void pca::set_weights(std::vector<double> &weights)
+{
+    w_.resize(weights.size());
+    arma::Col<double> col(&weights.front(), weights.size());
+    w_.col(0) = std::move(col);
+}
+
 void pca::set_solver(const std::string& solver) {
     if (solver!="standard" && solver!="dc")
         throw std::invalid_argument(utils::join("No such solver available: ", solver));
@@ -167,9 +174,10 @@ void pca::solve() {
 
     data_.resize(num_records_, num_vars_);
 
-    mean_ = utils::compute_column_means(data_);
+    //mean_ = utils::compute_column_means(data_);
+    mean_ = utils::compute_column_means(data_, w_);
     utils::remove_column_means(data_, mean_);
-
+    mean_.print();
     sigma_ = utils::compute_column_rms(data_);
     if (do_normalize_) utils::normalize_by_column(data_, sigma_);
 
@@ -187,7 +195,7 @@ void pca::solve() {
 
     utils::enforce_positive_sign_by_column(eigvec_);
     proj_eigvec_ = eigvec_;
-
+    proj_eigvec_.print();
     princomp_ = data_ * eigvec_;
 
     energy_(0) = arma::sum(eigval_);

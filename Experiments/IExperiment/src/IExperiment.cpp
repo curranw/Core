@@ -86,6 +86,7 @@ void IExperiment::step()
     tot_reward += reward;
 
     if(m_domain->m_accumulate_data) m_accumulated_data.push_back(state);
+    if(m_domain->m_accumulate_data) m_accumulated_rewards.push_back(reward);
 }
 
 void IExperiment::get_reward()
@@ -110,9 +111,10 @@ void IExperiment::end_epoch()
     m_learning_algorithm->end_epoch();
     m_rewards.push_back(tot_reward);
     if(m_domain->m_accumulate_data) m_accumulated_data.clear();
+    if(m_domain->m_accumulate_data) m_accumulated_rewards.clear();
 
     current_iteration++;
-    if(current_iteration % 1 == 0)
+    if(current_iteration % 100 == 0)
         cout << current_iteration << ", " << tot_reward << endl;
 
     tot_reward = 0;

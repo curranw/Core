@@ -2,7 +2,6 @@
 #include <stdexcept>
 #include <sstream>
 #include <numeric>
-
 namespace stats {
 namespace utils {
 
@@ -30,6 +29,30 @@ arma::Col<double> compute_column_means(const arma::Mat<double>& data) {
 	return std::move(means);
 }
 
+arma::Col<double> compute_column_means(const arma::Mat<double>& data, arma::Col<double>& w) {
+    const long n_cols = data.n_cols;
+    const long n_rows = data.n_rows;
+    arma::Col<double> means(n_cols);
+    arma::Mat<double> weighted_data = data;
+    arma::Col<double> norm_w = w;
+
+    double max = w.max();
+    double min = w.min();
+    for(long i=0; i < n_rows; i++)
+    {
+        norm_w(i) = (norm_w(i) - min)/(max - min);
+    }
+    for (long i=0; i< n_rows; ++i)
+    {
+        for(long j=0; j<n_cols; ++j)
+        {
+            weighted_data(i,j) *= norm_w(i);
+        }
+    }
+    for (long i=0; i<n_cols; ++i)
+        means(i) = arma::mean(weighted_data.col(i));
+    return std::move(means);
+}
 void remove_column_means(arma::Mat<double>& data, const arma::Col<double>& means) {
 	if (data.n_cols != means.n_elem)
 		throw std::range_error("Number of elements of means is not equal to the number of columns of data");

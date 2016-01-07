@@ -93,6 +93,8 @@ public:
 	 * @brief Returns whether the eigenproblem is bootstrapped
 	 * @return The boolean flag
 	 */
+    void set_weights(std::vector<double>& weights);
+
 	bool get_do_bootstrap() const;
 	/**
 	 * @brief Returns the number of bootstraps used in the optional bootstrapping
@@ -270,6 +272,7 @@ protected:
 	arma::Mat<double> princomp_;
 	arma::Col<double> mean_;
 	arma::Col<double> sigma_;
+    arma::Col<double> w_;
 	void initialize_();
 	void assert_num_vars_();
 	void resize_data_if_needed_();
@@ -299,6 +302,7 @@ arma::Mat<double> make_shuffled_matrix(const arma::Mat<double>& data);
  * @return The column means
  */
 arma::Col<double> compute_column_means(const arma::Mat<double>& data);
+arma::Col<double> compute_column_means(const arma::Mat<double>& data, arma::Col<double> &w);
 /**
  * @brief Removes the column means from the input matrix
  * @param data The input matrix to be altered

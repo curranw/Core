@@ -32,6 +32,7 @@ public:
     double tot_reward;
 
     vector<vector<double> > m_accumulated_data;
+    vector<double> m_accumulated_rewards;
 public:
     virtual void init();
     virtual void epoch();
