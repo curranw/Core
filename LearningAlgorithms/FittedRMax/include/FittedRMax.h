@@ -1,7 +1,6 @@
 #pragma once
 #include <ILearningAlgorithm.h>
 #include <ValueIteration.h>
-#include <linterp.h>
 #include <algorithm>
 #include <set>
 class FittedRMaxArgs : public ILearningArguments

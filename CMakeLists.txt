@@ -18,8 +18,6 @@ set(PCAI_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/PCAInterface/include)
 set(PCA_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/libpca-1.3.3/src/lib)
 set(ANN_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/ANN/include)
 set(TILES_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/tiles/include)
-set(MLINTERP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/linterp/src/)
-set(TAPKEE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/tapkee/include/)
 
 #Learning Algorithms
 set(ILEARNINGALGORITHM_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/LearningAlgorithms/ILearningAlgorithm/include)
@@ -82,7 +80,6 @@ ${ROBOTCHASEEXP_INCLUDE_DIR} ${VALUEITERATION_INCLUDE_DIR} ${RMAX_INCLUDE_DIR} $
 add_subdirectory(libs/libpca-1.3.3)
 add_subdirectory(libs/ANN)
 add_subdirectory(libs/tiles)
-add_subdirectory(libs/linterp)
 add_subdirectory(PCAInterface)
 add_subdirectory(Domains)
 add_subdirectory(LearningAlgorithms)
