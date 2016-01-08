@@ -328,6 +328,7 @@ void Q_KNN::update(QElement::State old_s, QElement::Action old_a, QElement::Stat
 
 void Q_KNN::update(QUpdate update)
 {
+    /*
     //Calculate values for new state.
     unordered_map<int, double> new_action_values = update.next_state_action_values;
     //Calculate delta
@@ -432,6 +433,7 @@ void Q_KNN::e_update(QUpdate update)
             e->at(j) = gamma * 0.1 * e->at(j);
         }
     }
+    */
 }
 
 void Q_KNN::e_update(QElement::State old_s, QElement::Action old_a, QElement::State new_s, double reward)

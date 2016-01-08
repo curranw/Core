@@ -23,7 +23,7 @@ public:
     double reward;
     QElement::State state, next_state;
     QElement::Action action;
-    unordered_map<int, double> next_state_action_values;
+    vector<double> next_state_action_values;
     double old_value;
     vector<QElement*> states_to_update;
     vector<double> old_probabilities;

@@ -1,5 +1,4 @@
 #include <AAAI2015.h>
-
 void AAAI2015::setup_experiments()
 {
 

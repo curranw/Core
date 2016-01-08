@@ -34,7 +34,7 @@ public:
     bool is_converged();
     void clear_trace();
     QElement::State scale(QElement::State* s, int dimension);
-    unordered_map<int, double> compute_action_values(QElement::State* state);
+    vector<double> compute_action_values(QElement::State* state);
     void set_possible_actions(vector<int> possible_actions);
     void compute_all_states();
     vector<QElement::State> all_states;

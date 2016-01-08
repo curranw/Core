@@ -35,79 +35,85 @@ void QTiles::init()
     }
 }
 
+void QTiles::read(string file)
+{
+
+}
+
 pair<QElement::Action, double> QTiles::get_action(QElement::State s)
 {
     vector<QElement*> nearby_states = calculate_nearby_states(s);
-    unordered_map<QElement::Action, double> V = get_action_values(nearby_states);
+    vector<double> V = get_action_values(nearby_states);
 
     pair<QElement::Action, double> action_values = random_action(V);
     //cout << action_values.first << endl;
     return action_values;
 }
 
-pair<QElement::Action, double> QTiles::random_action(unordered_map<int, double> action_values)
+pair<QElement::Action, double> QTiles::random_action(vector<double> action_values)
 {
     //Return best action
     double rand_val = (double)rand() / RAND_MAX;
-    unordered_map<int, double>::const_iterator max_it;
+    int max_it;
+    double max_val;
     if(rand_val < 0.1)
     {
-        max_it = action_values.begin();
-        std::advance(max_it, rand() % action_values.size());
+        max_it = rand() % action_values.size();
+        max_val = action_values[max_it];
     }
     else
     {
-        vector<unordered_map<int, double>::const_iterator> list_of_max;
-        for(unordered_map<int, double>::iterator it = action_values.begin(); it != action_values.end(); it++)
+        vector<int> list_of_max;
+        for(int i = 0; i < action_values.size(); i++)
         {
-            if(it == action_values.begin())
+            if(i == 0)
             {
-                list_of_max.push_back(it);
-                max_it = it;
+                list_of_max.push_back(i);
+                max_it = i;
+                max_val = action_values[i];
             }
-            else if (it->second > max_it->second)
+            else if (action_values[i] > max_val)
             {
                 list_of_max.clear();
-                max_it = it;
-                list_of_max.push_back(it);
+                max_it = i;
+                max_val = action_values[i];
+                list_of_max.push_back(i);
             }
-            else if (abs(it->second - max_it->second) < 0.01)
+            else if (abs(action_values[i] - max_val) < 0.0001)
             {
-                list_of_max.push_back(it);
+                list_of_max.push_back(i);
             }
         }
         max_it = list_of_max[rand() % list_of_max.size()];
+        max_val = action_values[max_it];
     }
 
     pair<QElement::Action, double> return_val;
-    return_val = make_pair(max_it->first, max_it->second);
+    return_val = make_pair(max_it, max_val);
     return return_val;
 
 }
 
-//TODO: Switch to vector. Screw it.
-unordered_map<QElement::Action, double> QTiles::get_action_values(vector<QElement*> nearby_states)
+
+vector<double> QTiles::get_action_values(vector<QElement*> nearby_states)
 {
     //unordered_map<QElement::Action, double> V;
 
-    for(unordered_map<QElement::Action, double>::iterator it = V_local.begin(); it != V_local.end(); it++)
-    {
-        it->second = 0;
-    }
+    vector<double> vec(m_possible_actions.size());
     for(unsigned int i = 0; i < nearby_states.size(); i++)
     {
         QElement* ele = nearby_states[i];
         for(unsigned int j = 0; j < m_possible_actions.size(); j++)
         {
-            V_local[j] += ele->v[j];
+            vec[j] += ele->v[j];
         }
     }
-    return V_local;
+    return vec;
 }
 
 
 
-unordered_map<int, double> QTiles::get_action_values(QElement::State s)
+vector<double> QTiles::get_action_values(QElement::State s)
 {
     vector<QElement*> nearby_elements = calculate_nearby_states(s);
     return get_action_values(nearby_elements);
@@ -217,18 +223,18 @@ QElement* QTiles::add_tiles(int tile)
 void QTiles::update(QUpdate update)
 {
     vector<QElement*> nearby_states_old;
-    unordered_map<QElement::Action, double> old_V;
-    unordered_map<QElement::Action, double> new_V;
+    vector<double> old_V;
+    vector<double> new_V;
     if(update.next_state_action_values.empty())
     {
-        //nearby_states_old = calculate_nearby_states(update.state);
-        //old_V = get_action_values(nearby_states_old);
-//        if(old_V[update.action] != update.old_value)
-//        {
-//            cout << "OMG I DID THIS FOR A REASON" << endl;
-//            cout << "OMG I DID THIS FOR A REASON" << endl;
-//            cin.get();
-//        }
+        nearby_states_old = calculate_nearby_states(update.state);
+        old_V = get_action_values(nearby_states_old);
+        if(old_V[update.action] != update.old_value)
+        {
+            cout << "OMG I DID THIS FOR A REASON" << endl;
+            cout << "OMG I DID THIS FOR A REASON" << endl;
+            cin.get();
+        }
         //update.old_value = old_V[update.action];
         vector<QElement*> nearby_states_new = calculate_nearby_states(update.next_state);
         new_V = get_action_values(nearby_states_new);
@@ -238,9 +244,9 @@ void QTiles::update(QUpdate update)
         new_V = update.next_state_action_values;
     }
     double max_new = -999999;
-    for(unordered_map<QElement::Action, double>::iterator it = new_V.begin(); it != new_V.end(); it++)
+    for(int i = 0; i < new_V.size(); i++)
     {
-        double value = it->second;
+        double value = new_V[i];
         if (value > max_new)
         {
             max_new = value;
@@ -262,6 +268,7 @@ void QTiles::update(QUpdate update)
 
 void QTiles::e_update(QElement::State state, QElement::Action action, QElement::State new_state,double reward)
 {
+    /*
     vector<QElement*> nearby_states_old = calculate_nearby_states(state);
     unordered_map<QElement::Action, double> old_V = get_action_values(nearby_states_old);
 
@@ -366,12 +373,14 @@ void QTiles::e_update(QElement::State state, QElement::Action action, QElement::
             e->at(j) = gamma * 0.1 * e->at(j);
         }
     }
+    */
 }
 
 
 
 void QTiles::e_update(QUpdate update)
 {
+    /*
     //Calculate values for new state.
     unordered_map<int, double> new_action_values = update.next_state_action_values;
     //Calculate delta
@@ -440,6 +449,7 @@ void QTiles::e_update(QUpdate update)
             e->at(j) = gamma * 0.5 * e->at(j);
         }
     }
+    */
 }
 
 void QTiles::clear_trace()
@@ -454,6 +464,7 @@ void QTiles::clear_trace()
 
 void QTiles::update(QElement::State old_s, QElement::Action old_a, QElement::State new_s, double reward)
 {
+    /*
     vector<QElement*> nearby_states_old = calculate_nearby_states(old_s);
     unordered_map<QElement::Action, double> old_V = get_action_values(nearby_states_old);
 
@@ -475,6 +486,7 @@ void QTiles::update(QElement::State old_s, QElement::Action old_a, QElement::Sta
     {
         nearby_states_old[i]->v[old_a] += alpha/tiles * delta;
     }
+    */
 }
 
 int QTiles::get_table_size()
