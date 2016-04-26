@@ -10,6 +10,7 @@ Swimmers::Swimmers(int segments)
 
 void Swimmers::init()
 {
+    last_v = 0;
     swimmer->reset();
     swimmerwin->Reset();
 }
@@ -19,8 +20,8 @@ vector<double> Swimmers::get_state()
     int num_segments = swimmer->GetSegments();
     vector<double> state;
     CVector swim_state = swimmerwin->GetState();
-    state.push_back(swim_state[0]);
-    state.push_back(swim_state[1]);
+    //state.push_back(swim_state[0]);
+    //state.push_back(swim_state[1]);
     for(int i = 0; i < num_segments; i++)
     {
         double theta = swim_state[i*2+2];
@@ -56,12 +57,13 @@ vector<double> Swimmers::get_min_ranges()
 {
     int num_segments = swimmer->GetSegments();
     vector<double> min_ranges;
-    min_ranges.push_back(-0.8);
-    min_ranges.push_back(-0.8);
+    //min_ranges.push_back(-1);
+    //min_ranges.push_back(-1);
     for(int i = 0; i < num_segments; i++)
     {
         min_ranges.push_back(-3.2);
-        min_ranges.push_back(-5);
+        min_ranges.push_back(-8);
+        //min_ranges.push_back(-8);
     }
     return min_ranges;
 }
@@ -70,12 +72,13 @@ vector<double> Swimmers::get_max_ranges()
 {
     int num_segments = swimmer->GetSegments();
     vector<double> max_ranges;
-    max_ranges.push_back(0.8);
-    max_ranges.push_back(0.8);
+    //max_ranges.push_back(1);
+    //max_ranges.push_back(1);
     for(int i = 0; i < num_segments; i++)
     {
         max_ranges.push_back(3.2);
-        max_ranges.push_back(5);
+        max_ranges.push_back(8);
+        //max_ranges.push_back(8);
     }
     return max_ranges;
 }
@@ -91,6 +94,15 @@ double Swimmers::get_reward()
     return swim_state[0];
 }
 
+double Swimmers::get_potential()
+{
+    CVector swim_state = swimmerwin->GetState();
+    double cur_v = swim_state[0];
+    double accel = cur_v - last_v;
+    last_v = swim_state[0];
+    return accel;
+}
+
 void Swimmers::compute_possible_actions()
 {
     int num_dimensions = swimmer->GetControlDimension();
@@ -98,9 +110,9 @@ void Swimmers::compute_possible_actions()
     map<int, vector<double> > action_mapping;
     vector<double> a;
     a.push_back(-3);
-    a.push_back(-1);
+    //a.push_back(-1);
     a.push_back(0);
-    a.push_back(1);
+    //a.push_back(1);
     a.push_back(3);
     vector<int> totals(num_dimensions);
     std::fill(totals.begin(), totals.end(), 0);
@@ -131,11 +143,19 @@ void Swimmers::compute_possible_actions()
 }
 
 
+
+
 //This should be step
 void Swimmers::GetControl(const double *px, double *pu) const
 {
     for (int i = swimmer->GetControlDimension(); --i >= 0;)
         pu[i] = action_vec[i];
     //pu[i] = (i & 1) ? 0 : swimmer->GetUMax(i);
+}
+
+Swimmers::~Swimmers()
+{
+    delete swimmer;
+    delete swimmerwin;
 }
 

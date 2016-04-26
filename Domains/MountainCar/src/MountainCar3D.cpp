@@ -79,7 +79,7 @@ double MountainCar3D::get_reward()
     //Reward
     double reward;
     if(!win) reward = -1;
-    else reward = 100;
+    else reward = 0;
 
     return reward;
 }

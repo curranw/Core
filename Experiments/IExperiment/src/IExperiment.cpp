@@ -66,21 +66,6 @@ void IExperiment::step()
     update_params.action = action_value.first;
     update_params.old_value = action_value.second;
 
-//    cout << "State: ";
-//    for(unsigned int i = 0; i < state.size(); i++)
-//    {
-//        cout << state[i] << ",";
-//    }
-//    cout << endl;
-//    cout << "Next State: ";
-//    for(unsigned int i = 0; i < next_state.size(); i++)
-//    {
-//        cout << next_state[i] << ",";
-//    }
-//    cout << endl;
-//    cout << "Action: " << action_value.first << endl;
-//    cout << "Reward: " << reward << endl;
-
     m_learning_algorithm->update(update_params);
 
     tot_reward += reward;

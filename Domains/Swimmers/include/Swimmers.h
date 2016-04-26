@@ -18,11 +18,12 @@ public:
     double get_reward();
     void compute_possible_actions();
     bool viz;
-
+    double get_potential();
+    virtual ~Swimmers();
 private:
     CSwimmer* swimmer;
     CXSwimmer* swimmerwin;
     vector<double> action_vec;
     void GetControl(const double *px, double *pu) const;
-
+    double last_v;
 };

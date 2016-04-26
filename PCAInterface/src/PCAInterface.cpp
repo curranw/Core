@@ -14,7 +14,7 @@ void PCAInterface::solve()
 {
     pca->set_do_normalize(false);
     pca->solve();
-    //pca->save("Swimmers");
+    //pca->save("Swimmers_large_norm");
     //exit(1);
     //pca->set_do_normalize(false);
 }

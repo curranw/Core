@@ -20,7 +20,9 @@ public:
     void setup_experiments();
 
     void normal_learning(string save_file);
+    void normal_learning_swimmers_large(string save_file);
     void normal_learning_swimmers(string save_file);
+    void pca_learning_swimmers_large(string pca_file, int amount, string save_file, int dim, bool iterative);
     void pca_learning_swimmers(string pca_file, int amount, string save_file, int dim, bool iterative);
     void normal_learning_rmax(string save_file);
     void normal_learning_fitted_rmax(string save_file);

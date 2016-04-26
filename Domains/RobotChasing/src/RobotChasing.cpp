@@ -2,16 +2,16 @@
 
 RobotChasing::RobotChasing()
 {
-    m_max_x = 1;
-    m_max_y = 1;
+    m_max_x = 6;
+    m_max_y = 6;
 }
 
 void RobotChasing::init()
 {
     m_agent_x = 0;
     m_agent_y = 0;
-    m_robot_x = rand() % m_max_x + 1;
-    m_robot_y = rand() % m_max_y + 1;
+    m_robot_x = m_max_x;
+    m_robot_y = m_max_y;
 }
 
 vector<double> RobotChasing::get_state()
@@ -19,8 +19,8 @@ vector<double> RobotChasing::get_state()
     vector<double> state;
     state.push_back(m_agent_x);
     state.push_back(m_agent_y);
-    state.push_back(m_robot_x);
-    state.push_back(m_robot_y);
+    //state.push_back(m_robot_x);
+    //state.push_back(m_robot_y);
     return state;
 }
 
@@ -29,13 +29,21 @@ void RobotChasing::step(int action)
     //Agent
     vector<double> a = m_action_mapping[action];
     //Down
+//    if(a[0] == 0) m_agent_y += ((double)rand()/(RAND_MAX)) + 1;
+//    //Left
+//    if(a[0] == 1) m_agent_x -=  ((double)rand()/(RAND_MAX)) + 1;
+//    //Right
+//    if(a[0] == 2) m_agent_x +=  ((double)rand()/(RAND_MAX)) + 1;
+//    //Up
+//    if(a[0] == 3) m_agent_y -=  ((double)rand()/(RAND_MAX)) + 1;
     if(a[0] == 0) m_agent_y += 1;
     //Left
-    if(a[0] == 1) m_agent_x -= 1;
+    if(a[0] == 1) m_agent_x -=  1;
     //Right
     if(a[0] == 2) m_agent_x += 1;
     //Up
     if(a[0] == 3) m_agent_y -= 1;
+
     if(m_agent_y < 0) m_agent_y = 0;
     if(m_agent_y > m_max_y) m_agent_y = m_max_y;
     if(m_agent_x < 0) m_agent_x = 0;
@@ -57,9 +65,8 @@ void RobotChasing::step(int action)
 //    if(m_robot_x < 0) m_robot_x = 0;
 //    if(m_robot_x > m_max_x) m_robot_x = m_max_y;
 
-    //cout << m_agent_x << "," << m_agent_y << endl;
-    //cout << "-------" << endl;
-    //cout << m_robot_x << "," << m_robot_y << endl;
+    cout << "Agent:" << m_agent_x << "," << m_agent_y << endl;
+    cout << "Target:" << m_robot_x << "," << m_robot_y << endl;
 
 }
 
@@ -68,8 +75,8 @@ vector<double> RobotChasing::get_min_ranges()
     vector<double> min_ranges;
     min_ranges.push_back(0);
     min_ranges.push_back(0);
-    min_ranges.push_back(0);
-    min_ranges.push_back(0);
+    //min_ranges.push_back(0);
+    //min_ranges.push_back(0);
     return min_ranges;
 }
 
@@ -78,8 +85,8 @@ vector<double> RobotChasing::get_max_ranges()
     vector<double> max_ranges;
     max_ranges.push_back(m_max_x);
     max_ranges.push_back(m_max_y);
-    max_ranges.push_back(m_max_x);
-    max_ranges.push_back(m_max_y);
+    //max_ranges.push_back(m_max_x);
+    //max_ranges.push_back(m_max_y);
     return max_ranges;
 }
 

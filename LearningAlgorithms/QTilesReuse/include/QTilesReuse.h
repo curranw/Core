@@ -28,7 +28,7 @@ public:
     void update(QElement::State *old_state, QElement::Action old_action, QElement::State *new_state, double reward);
     void update(QUpdate update);
     void solve_manifold(vector<QElement::State>* states, int amount);
-
+    void end_epoch();
     int get_table_size();
 
     bool is_converged();
@@ -48,4 +48,11 @@ public:
     double num_similar;
     double num_updates;
     virtual ~QTilesReuse();
+
+private:
+    double running_avg;
+    double last_running_avg;
+    double tot_reward;
+
+    int cur_dim_it;
 };

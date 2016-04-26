@@ -83,9 +83,9 @@ void MountainCarExperiment::output_results()
     IExperiment::output_results();
     if(m_domain->m_accumulate_data)
     {
-        if(good_data.size() >= 50000) utils::to_csv(&good_data, "converged_state_data_4d_good");
+        if(good_data.size() >= 50000) utils::to_csv(&good_data, "mountain_car_3d_good");
 
-        if(bad_data.size() >= 50000) utils::to_csv(&bad_data, "converged_state_data_4d_bad");
+        if(bad_data.size() >= 50000) utils::to_csv(&bad_data, "mountain_car_3d_bad");
     }
 }
 

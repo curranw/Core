@@ -29,6 +29,8 @@ public:
     virtual void set_ranges(vector<double> min_ranges, vector<double> max_ranges);
     virtual void set_resolution(vector<double> resolution);
     virtual void end_epoch();
+    virtual void output(string file);
+    virtual void read(string file);
 protected:
     ILearningArguments* m_args;
 

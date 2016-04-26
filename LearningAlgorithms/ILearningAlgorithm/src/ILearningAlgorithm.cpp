@@ -25,6 +25,16 @@ void ILearningAlgorithm::end_epoch()
 
 }
 
+void ILearningAlgorithm::output(string file)
+{
+
+}
+
+void ILearningAlgorithm::read(string file)
+{
+
+}
+
 void ILearningAlgorithm::set_possible_actions(vector<int> possible_actions)
 {
     m_possible_actions = possible_actions;

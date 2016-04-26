@@ -25,8 +25,11 @@ public:
     SwimmersExperiment(Swimmers* domain, QTiles* learning_algorithm, SwimmersExperimentArgs* exp_args);
     void end_epoch();
     void output_results();
+    void step();
     void init();
     virtual ~SwimmersExperiment();
+
+    double potential_prev;
 
 private:
     SwimmersExperimentArgs* m_exp_args;

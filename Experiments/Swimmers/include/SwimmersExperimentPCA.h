@@ -24,6 +24,8 @@ public:
     void end_epoch();
     void output_results();
     Swimmers* m_domain;
+    double potential_prev;
+    double running_avg, last_running_avg;
 
 private:
     SwimmersExperimentPCAArgs* m_exp_args;

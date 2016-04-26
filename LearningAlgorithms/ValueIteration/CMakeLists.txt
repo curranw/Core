@@ -12,4 +12,3 @@ file(GLOB VI_INCLUDE
 
 add_library(${PROJECT_NAME} ${VI_SRC} ${VI_INCLUDE})
 
-#target_link_libraries(${PROJECT_NAME} TILES)

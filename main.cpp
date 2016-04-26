@@ -18,7 +18,7 @@ void run_experiment()
 
 int main()
 {
-    srand(0);
+    //srand(0);
 //    NPole* p = new NPole();
 //    p->init();
 //    p->compute_possible_actions();

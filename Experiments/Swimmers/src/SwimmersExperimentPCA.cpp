@@ -15,6 +15,8 @@ SwimmersExperimentPCA::SwimmersExperimentPCA(Swimmers *domain, QTilesReuse *lear
 
 void SwimmersExperimentPCA::init()
 {
+    running_avg = 0;
+    potential_prev = 0;
     IExperiment::init();
     current_dimension = m_exp_args->start_dimension;
     m_learning_algorithm->set_projection_dimension(current_dimension);
@@ -22,7 +24,31 @@ void SwimmersExperimentPCA::init()
 
 void SwimmersExperimentPCA::step()
 {
-    IExperiment::step();
+    cur_step++;
+    vector<double> state = m_domain->get_state();
+
+    pair<QElement::Action, double> action_value = m_learning_algorithm->get_action(state);
+
+    m_domain->step(action_value.first);
+
+    vector<double> next_state = m_domain->get_state();
+    double potential_post = m_domain->get_potential();
+    //cout << potential_prev << "," << potential_post << "," << -(potential_prev - .99 * potential_post) << endl;
+
+    double reward = m_domain->get_reward();
+
+    update_params.reward = reward;// + -(potential_prev - .99 * potential_post);
+    update_params.state = state;
+    update_params.next_state = next_state;
+    update_params.action = action_value.first;
+    update_params.old_value = action_value.second;
+
+    m_learning_algorithm->update(update_params);
+
+    tot_reward += reward;
+    potential_prev = potential_post;
+    if(m_domain->m_accumulate_data) m_accumulated_data.push_back(state);
+    if(m_domain->m_accumulate_data) m_accumulated_rewards.push_back(reward);
 }
 
 void SwimmersExperimentPCA::end_epoch()
@@ -40,16 +66,19 @@ void SwimmersExperimentPCA::end_epoch()
             it = 0;
         }
     }
-    if(current_iteration % 100 == 0) cout << m_learning_algorithm->get_table_size() << "," << tot_reward << endl;
+    last_running_avg = running_avg;
+    iteration++;
+    running_avg = last_running_avg + (tot_reward - last_running_avg)/double((iteration % 2500)+1);
+    if(iteration % 100 == 0) cout << m_learning_algorithm->get_table_size() << "," << running_avg << endl;
     performance = 0;
 
-    iteration++;
-    if(iteration == m_exp_args->num_epochs-1)
-    {
-        cout << "OMG THIS IS AWESOME" << endl;
-        cin.get();
-        m_domain->viz = true;
-    }
+    //iteration++;
+//    if(iteration == m_exp_args->num_epochs-1)
+//    {
+//        cout << "OMG THIS IS AWESOME" << endl;
+//        cin.get();
+//        m_domain->viz = true;
+//    }
     IExperiment::end_epoch();
 }
 

@@ -47,7 +47,6 @@ public:
     virtual ~QTiles();
     void end_epoch();
     void init();
-    void read(string file);
     bool no_new;
 private:
     QTilesArguments* m_args;
@@ -63,7 +62,7 @@ private:
     int tilings;
     bool do_eligability;
     int test_it;
-
+    double cur_eps;
     set<QElement*> ele_to_update;
     unordered_map<QElement::Action, double> V_local;
 };

@@ -41,6 +41,7 @@ arma::Col<double> compute_column_means(const arma::Mat<double>& data, arma::Col<
     for(long i=0; i < n_rows; i++)
     {
         norm_w(i) = (norm_w(i) - min)/(max - min);
+        //norm_w(i) = double(rand())/double(RAND_MAX);
     }
     for (long i=0; i< n_rows; ++i)
     {

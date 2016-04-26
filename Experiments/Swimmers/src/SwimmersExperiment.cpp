@@ -47,6 +47,7 @@ SwimmersExperiment::SwimmersExperiment(Swimmers *domain, QTiles *learning_algori
 
 void SwimmersExperiment::init()
 {
+    potential_prev = 0;
     IExperiment::init();
 //    arma::Mat<double> probs = m_domain->calculate_probabilities();
 //    arma::Mat<double> rewards = m_domain->calculate_rewards();
@@ -60,11 +61,40 @@ void SwimmersExperiment::init()
 
 }
 
+void SwimmersExperiment::step()
+{
+    cur_step++;
+    vector<double> state = m_domain->get_state();
+
+    pair<QElement::Action, double> action_value = m_learning_algorithm->get_action(state);
+
+    m_domain->step(action_value.first);
+
+    vector<double> next_state = m_domain->get_state();
+    double potential_post = m_domain->get_potential();
+    //cout << potential_prev << "," << potential_post << "," << -(potential_prev - .99 * potential_post) << endl;
+
+    double reward = m_domain->get_reward();
+
+    update_params.reward = reward;// + -(potential_prev - .99 * potential_post);
+    update_params.state = state;
+    update_params.next_state = next_state;
+    update_params.action = action_value.first;
+    update_params.old_value = action_value.second;
+
+    m_learning_algorithm->update(update_params);
+
+    tot_reward += reward;
+    potential_prev = potential_post;
+    if(m_domain->m_accumulate_data) m_accumulated_data.push_back(state);
+    if(m_domain->m_accumulate_data) m_accumulated_rewards.push_back(reward);
+}
+
 void SwimmersExperiment::end_epoch()
 {
     if(m_domain->m_accumulate_data && m_accumulated_data.size() >= 100)
     {
-        if(tot_reward > 500 && good_data.size() < 50000)
+        if(tot_reward > 300 && good_data.size() < 50000)
         {
             for(unsigned int i = 0; i < m_accumulated_data.size(); i++)
             {
@@ -85,12 +115,12 @@ void SwimmersExperiment::end_epoch()
     IExperiment::end_epoch();
     iteration++;
 
-    if(iteration == m_exp_args->num_epochs-1)
-    {
-        cout << "OMG THIS IS AWESOME" << endl;
-        cin.get();
-        m_domain->viz = true;
-    }
+//    if(iteration == m_exp_args->num_epochs-1)
+//    {
+//        cout << "OMG THIS IS AWESOME" << endl;
+//        cin.get();
+//        m_domain->viz = true;
+//    }
 }
 
 void SwimmersExperiment::output_results()
@@ -98,10 +128,10 @@ void SwimmersExperiment::output_results()
     IExperiment::output_results();
     if(m_domain->m_accumulate_data)
     {
-        if(good_data.size() >= 50000) utils::to_csv(&good_data, "converged_state_data_swimmers_good_large");
-        if(bad_rewards.size() >= 50000) utils::to_csv(&bad_rewards, "converged_state_rewards_swimmers_bad_large");
-        if(bad_data.size() >= 50000) utils::to_csv(&bad_data, "converged_state_data_swimmers_bad_large");
-        if(good_rewards.size() >= 50000) utils::to_csv(&good_rewards, "converged_state_rewards_swimmers_good_large");
+        if(good_data.size() >= 50000) utils::to_csv(&good_data, "converged_state_data_swimmers_good_large_NEWEST");
+        if(bad_rewards.size() >= 50000) utils::to_csv(&bad_rewards, "converged_state_rewards_swimmers_bad_large_NEWEST");
+        if(bad_data.size() >= 50000) utils::to_csv(&bad_data, "converged_state_data_swimmers_bad_NEWEST");
+        if(good_rewards.size() >= 50000) utils::to_csv(&good_rewards, "converged_state_rewards_swimmers_good_NEWEST");
 
 
     }

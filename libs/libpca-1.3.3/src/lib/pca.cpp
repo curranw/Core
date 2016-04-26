@@ -174,8 +174,8 @@ void pca::solve() {
 
     data_.resize(num_records_, num_vars_);
 
-    //mean_ = utils::compute_column_means(data_);
-    mean_ = utils::compute_column_means(data_, w_);
+    mean_ = utils::compute_column_means(data_);
+    //mean_ = utils::compute_column_means(data_, w_);
     utils::remove_column_means(data_, mean_);
     mean_.print();
     sigma_ = utils::compute_column_rms(data_);

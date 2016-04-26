@@ -20,7 +20,7 @@ QTiles::QTiles(QTilesArguments* args) : ILearningAlgorithm(args)
     m_args = args;
     cur_it = 0;
     count = 0;
-
+    cur_eps = .1;
     tiles_array = new int[tiles];
 
     m_resolution = args->resolution;
@@ -33,11 +33,6 @@ void QTiles::init()
     {
         V_local[i] = 0;
     }
-}
-
-void QTiles::read(string file)
-{
-
 }
 
 pair<QElement::Action, double> QTiles::get_action(QElement::State s)
@@ -79,7 +74,7 @@ pair<QElement::Action, double> QTiles::random_action(vector<double> action_value
                 max_val = action_values[i];
                 list_of_max.push_back(i);
             }
-            else if (abs(action_values[i] - max_val) < 0.0001)
+            else if (abs(action_values[i] - max_val) < 0.000001)
             {
                 list_of_max.push_back(i);
             }
@@ -129,7 +124,7 @@ vector<QElement*> QTiles::calculate_nearby_states(QElement::State s)
     if(test_it++ % 100000 == 0)
     {
         test_it = 1;
-        cout << s.size() << "," << q_table_m.size() << endl;
+        cout << s.size() << "," << q_table_m.size() << "," << cur_eps << endl;
     }
     int num_states = s.size();
     float projected_state[s.size()];
@@ -212,8 +207,8 @@ QElement* QTiles::add_tiles(int tile)
     QElement* ele = new QElement();
     for(unsigned int j = 0; j < m_possible_actions.size(); j++)
     {
-        //ele->v.push_back(100.0);
-        ele->v.push_back((double(rand())/RAND_MAX)/10.0);
+        //ele->v.push_back(double(rand())/RAND_MAX);
+        ele->v.push_back((double(rand())/RAND_MAX)/1000.0);
         //ele->a.push_back(j);
     }
     q_table_m.insert(make_pair(tile,ele));
@@ -242,6 +237,7 @@ void QTiles::update(QUpdate update)
     else
     {
         new_V = update.next_state_action_values;
+        //old_V = get_action_values(update.states_to_update);
     }
     double max_new = -999999;
     for(int i = 0; i < new_V.size(); i++)
@@ -252,7 +248,7 @@ void QTiles::update(QUpdate update)
             max_new = value;
         }
     }
-
+    //double delta = update.reward - update.old_value;
     double delta = update.reward + gamma * max_new - update.old_value;
 
     if(update.states_to_update.empty())
@@ -494,7 +490,11 @@ int QTiles::get_table_size()
     return q_table_m.size();
 }
 
-
+void QTiles::end_epoch()
+{
+    if(do_eligability) clear_trace();
+    cur_eps = cur_eps * .999977;
+}
 
 QTiles::~QTiles()
 {
@@ -506,8 +506,5 @@ QTiles::~QTiles()
     delete m_args;
 }
 
-void QTiles::end_epoch()
-{
-    if(do_eligability) clear_trace();
-}
+
 

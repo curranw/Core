@@ -13,27 +13,27 @@ QTilesReuse::QTilesReuse(double dimensions, QTilesReuseArgs *args) : ILearningAl
     m_resolution = args->resolution;
     for(unsigned int i = 1; i <= total_dimensions; i++)
     {
-//        QTilesArguments* args = new QTilesArguments();
-//        if(i <= 2)
-//        {
-//            args->alpha = 0.01;
-//            args->eligability = false;
-//            args->gamma = 0.99;
-//            args->num_tiles = 10;
-//        }
-//        else
-//        {
-//            args->alpha = 0.1;
-//            args->eligability = false;
-//            args->gamma = 0.99;
-//            args->num_tiles = 10;
-//        }
-//        QTiles* learning_algorithm;
-//        if(i == 1) learning_algorithm = new QTiles(args);
-//        if(i == 2) learning_algorithm = new QTiles(args);
-//        if(i == 3) learning_algorithm = new QTiles(args);
-//        else learning_algorithm = new QTiles(args);
-//        m_learning_algorithms.push_back(learning_algorithm);
+        //        QTilesArguments* args = new QTilesArguments();
+        //        if(i <= 2)
+        //        {
+        //            args->alpha = 0.01;
+        //            args->eligability = false;
+        //            args->gamma = 0.99;
+        //            args->num_tiles = 10;
+        //        }
+        //        else
+        //        {
+        //            args->alpha = 0.1;
+        //            args->eligability = false;
+        //            args->gamma = 0.99;
+        //            args->num_tiles = 10;
+        //        }
+        //        QTiles* learning_algorithm;
+        //        if(i == 1) learning_algorithm = new QTiles(args);
+        //        if(i == 2) learning_algorithm = new QTiles(args);
+        //        if(i == 3) learning_algorithm = new QTiles(args);
+        //        else learning_algorithm = new QTiles(args);
+        //        m_learning_algorithms.push_back(learning_algorithm);
 
         ranges_max_all.push_back(vector<double>());
         ranges_min_all.push_back(vector<double>());
@@ -41,6 +41,9 @@ QTilesReuse::QTilesReuse(double dimensions, QTilesReuseArgs *args) : ILearningAl
 
     num_similar = 0;
     num_updates = 0;
+    running_avg = 0;
+    tot_reward = 0;
+    cur_dim_it = 0;
 }
 void QTilesReuse::set_projection_dimension(int projection_dimension)
 {
@@ -68,15 +71,23 @@ void QTilesReuse::set_projection_dimension(int projection_dimension)
             //temp_resolution.push_back(abs(1.0 - 0.0)/(10));
             double temp = (m_max_ranges[i] - m_min_ranges[i])/m_args->resolution[i];
             cout << temp << endl;
-            if(i == 0) temp_resolution.push_back(abs(1.0 - 0.0)/(82.0));
-            if(i == 1) temp_resolution.push_back(abs(1.0 - 0.0)/(10.0));
-            if(i == 2) temp_resolution.push_back(abs(1.0 - 0.0)/(4.0));
-            if(i == 3) temp_resolution.push_back(abs(1.0 - 0.0)/(1.0));
-            if(i == 4) temp_resolution.push_back(abs(1.0 - 0.0)/(1.0));
-            if(i == 5) temp_resolution.push_back(abs(1.0 - 0.0)/(1.0));
-            if(i == 6) temp_resolution.push_back(abs(1.0 - 0.0)/(1.0));
-            if(i == 7) temp_resolution.push_back(abs(1.0 - 0.0)/(1.0));
-//            temp_resolution.push_back(abs(1.0 - 0.0)/15.0);
+            //            if(i == 0) temp_resolution.push_back(abs(1.0 - 0.0)/(50.0));
+            //            if(i == 1) temp_resolution.push_back(abs(1.0 - 0.0)/(23.0));
+            //            if(i == 2) temp_resolution.push_back(abs(1.0 - 0.0)/(14.0));
+            //            if(i == 3) temp_resolution.push_back(abs(1.0 - 0.0)/(6.0));
+            //            if(i == 4) temp_resolution.push_back(abs(1.0 - 0.0)/(5.0));
+            //            if(i == 5) temp_resolution.push_back(abs(1.0 - 0.0)/(3.0));
+            //            if(i == 6) temp_resolution.push_back(abs(1.0 - 0.0)/(1.0));
+            //            if(i == 7) temp_resolution.push_back(abs(1.0 - 0.0)/(1.0));
+            //            if(i == 0) temp_resolution.push_back(abs(1.0 - 0.0)/(82.0));
+            //            if(i == 1) temp_resolution.push_back(abs(1.0 - 0.0)/(10.0));
+            //            if(i == 2) temp_resolution.push_back(abs(1.0 - 0.0)/(4.0));
+            //            if(i == 3) temp_resolution.push_back(abs(1.0 - 0.0)/(1.0));
+            //            if(i == 4) temp_resolution.push_back(abs(1.0 - 0.0)/(1.0));
+            //            if(i == 5) temp_resolution.push_back(abs(1.0 - 0.0)/(1.0));
+            //            if(i == 6) temp_resolution.push_back(abs(1.0 - 0.0)/(1.0));
+            //            if(i == 7) temp_resolution.push_back(abs(1.0 - 0.0)/(1.0));
+            temp_resolution.push_back(abs(1.0 - 0.0)/10.0);
 
 
 
@@ -92,7 +103,7 @@ void QTilesReuse::set_projection_dimension(int projection_dimension)
         for(unsigned int i = 0; i < total_dimensions; i++)
         {
             m_resolution = m_args->resolution;
-           // m_resolution.push_back(0.05);
+            // m_resolution.push_back(0.05);
             //m_resolution.push_back(0.1);
         }
         m_learning_algorithms[cur_dimension-1]->set_resolution(m_resolution);
@@ -203,7 +214,9 @@ void QTilesReuse::update(QElement::State* old_state, QElement::Action old_action
 void QTilesReuse::update(QUpdate update)
 {
     unordered_map<int, double>::const_iterator max_it;
-    vector<double> new_action_values;
+    vector<double> new_action_values(m_possible_actions.size());
+    vector<int> best_actions(m_possible_actions.size());
+    int best_next_action;
     for(set<int>::iterator used_proj_it = used_projections.begin(); used_proj_it != used_projections.end(); used_proj_it++)
     {
         int i = *used_proj_it;
@@ -216,6 +229,7 @@ void QTilesReuse::update(QUpdate update)
         else
         {
             down_state = pca_interface->transform_down(&update.next_state);
+            //if(i == cur_dimension) update.state = down_state;
         }
 
         vector<double> cur_action_values = m_learning_algorithms[i-1]->get_action_values(down_state);
@@ -225,10 +239,54 @@ void QTilesReuse::update(QUpdate update)
             if(i == cur_dimension) new_action_values[j] += cur_action_values[j];
             else new_action_values[j] += cur_action_values[j];
         }
+        if(i != cur_dimension)
+        {
+            int action = 0;
+            double max = cur_action_values[0];
+            for(int j = 1; j < cur_action_values.size(); j++)
+            {
+                if(cur_action_values[j] > max)
+                {
+                    action = j;
+                    max = cur_action_values[j];
+                }
+            }
+            best_actions[action]++;
+        }
+        if(i == cur_dimension)
+        {
+            best_next_action = 0;
+            double max = new_action_values[0];
+            for(int j = 1; j < new_action_values.size(); j++)
+            {
+                if(new_action_values[j] > max)
+                {
+                    best_next_action = j;
+                    max = new_action_values[j];
+                }
+            }
+        }
+    }
+    double potential = 0;
+    if(cur_dimension != *used_projections.begin())
+    {
+        int action = 0;
+        double max = best_actions[0];
+        for(unsigned int i = 1; i < best_actions.size(); i++)
+        {
+            if(best_actions[i] > max)
+            {
+                action = i;
+                max = best_actions[i];
+            }
+        }
+
+        //if(best_next_action == action) potential += .1 * .99;
+        if(update_args.action == update_args.best_action) potential -= .1;
     }
 
     update_args.next_state_action_values = new_action_values;
-    update_args.reward = update.reward;
+    update_args.reward = update.reward + potential;// * pow(.9999, cur_dim_it);
     pca_interface->set_projection_dimension(cur_dimension);
 
     if(cur_dimension != total_dimensions)
@@ -236,7 +294,6 @@ void QTilesReuse::update(QUpdate update)
         vector<double> action_values_old = compute_action_values(&update.state);
         m_learning_algorithms[cur_dimension-1]->update(update_args);
         vector<double> action_values_new = compute_action_values(&update.state);
-
         double max_old, max_new;
         int action_old, action_new;
         for(unsigned int i = 0; i < m_possible_actions.size(); i++)
@@ -267,6 +324,7 @@ void QTilesReuse::update(QUpdate update)
     {
         m_learning_algorithms[cur_dimension-1]->update(update_args);
     }
+    tot_reward += update.reward;
 }
 
 
@@ -292,9 +350,15 @@ void QTilesReuse::solve_manifold(vector<QElement::State>* states, int amount)
     pca_interface->solve();
 }
 
+void QTilesReuse::end_epoch()
+{
+    m_learning_algorithms[cur_dimension-1]->end_epoch();
+}
+
 vector<double> QTilesReuse::compute_action_values(QElement::State* state)
 {
     vector<double> action_values(m_possible_actions.size());
+    vector<int> best_actions(m_possible_actions.size());
     for(set<int>::iterator used_proj_it = used_projections.begin(); used_proj_it != used_projections.end(); used_proj_it++)
     {
         int i = *used_proj_it;
@@ -314,8 +378,37 @@ vector<double> QTilesReuse::compute_action_values(QElement::State* state)
             if(i == cur_dimension) action_values[j] += cur_action_values[j];
             else action_values[j] += cur_action_values[j];
         }
+        if(i != cur_dimension)
+        {
+            int action = 0;
+            double max = cur_action_values[0];
+            for(int j = 1; j < cur_action_values.size(); j++)
+            {
+                if(cur_action_values[j] > max)
+                {
+                    action = j;
+                    max = cur_action_values[j];
+                }
+            }
+            best_actions[action]++;
+        }
     }
 
+    if(cur_dimension != *used_projections.begin())
+    {
+        int action = 0;
+        double max = best_actions[0];
+        for(unsigned int i = 1; i < best_actions.size(); i++)
+        {
+            if(best_actions[i] > max)
+            {
+                action = i;
+                max = best_actions[i];
+            }
+        }
+        //cout << action << endl;
+        update_args.best_action = action;
+    }
     static int it = 0;
     it++;
     if(state->at(0) == -0.5)
@@ -342,23 +435,23 @@ void QTilesReuse::compute_all_states()
         num_states.push_back(2);
     }
 
-//    vector<int> num_states;
-//    for(unsigned int i = 0; i < m_min_ranges.size(); i++)
-//    {
-//        num_states.push_back((m_max_ranges[i] - m_min_ranges[i])/m_resolution[i]);
-//    }
-//    vector<vector<double> > all_values;
-//    for(unsigned int i = 0; i < num_states.size(); i++)
-//    {
-//        vector<double> values;
-//        //values.push_back(ranges_min[i]);
-//        for(unsigned int j = 0; j < num_states[i]; j++)
-//        {
-//            values.push_back(m_min_ranges[i] + (m_resolution[i] * (j)));
-//        }
-//        if(values.back() != m_max_ranges[i]) values.push_back(m_max_ranges[i]);
-//        all_values.push_back(values);
-//    }
+    //    vector<int> num_states;
+    //    for(unsigned int i = 0; i < m_min_ranges.size(); i++)
+    //    {
+    //        num_states.push_back((m_max_ranges[i] - m_min_ranges[i])/m_resolution[i]);
+    //    }
+    //    vector<vector<double> > all_values;
+    //    for(unsigned int i = 0; i < num_states.size(); i++)
+    //    {
+    //        vector<double> values;
+    //        //values.push_back(ranges_min[i]);
+    //        for(unsigned int j = 0; j < num_states[i]; j++)
+    //        {
+    //            values.push_back(m_min_ranges[i] + (m_resolution[i] * (j)));
+    //        }
+    //        if(values.back() != m_max_ranges[i]) values.push_back(m_max_ranges[i]);
+    //        all_values.push_back(values);
+    //    }
     vector<vector<double>::iterator> locations;
     for(unsigned int i = 0; i < num_states.size(); i++)
     {
@@ -432,27 +525,35 @@ void QTilesReuse::clear_trace()
 
 bool QTilesReuse::is_converged()
 {
-//    cout << num_updates << endl;
-//    cout << num_similar << endl;
-//    exit(1);
+    cur_dim_it++;
+    //    cout << num_updates << endl;
+    //    cout << num_similar << endl;
+    //    exit(1);
     if(total_dimensions == cur_dimension) return false;
     double val = num_similar/num_updates;
-    static int it = 0;
-    if(it++ % 100 == 0) cout << val << endl;
+    static double percentage = .99;
+    //    last_running_avg = running_avg;
+    //    running_avg = last_running_avg + (tot_reward - last_running_avg)/double(++it);
+    //    tot_reward = 0;
+    //if(it % 100 == 0) cout << percentage << endl;
     num_similar = 0;
     num_updates = 0;
+
     static int num = 0;
-    if(val > .99) num++;
+    percentage = percentage * .9999;
+    if(val > .95) num++;
     else num = 0;
-    if(num == 5)
+    if(num == 50)
     {
+        cur_dim_it = 0;
         num = 0;
+        percentage = .99;
         return true;
     }
     else return false;
 
-//    static running_val = 0;
-//    running_val = running_val+0.1 * val;
+    //    static running_val = 0;
+    //    running_val = running_val+0.1 * val;
 }
 
 void QTilesReuse::set_possible_actions(vector<int> possible_actions)

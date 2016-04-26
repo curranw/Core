@@ -1,9 +1,17 @@
 #include <AAAI2015.h>
 void AAAI2015::setup_experiments()
 {
-
+    for(unsigned int i = 0; i < 20; i++)
+    {
+        srand(time(NULL));
+        normal_learning("Normal_4");
+        //pca_learning("mountain_car_3d_good.csv", -1, "best_mountain_car",2, true);
+    }
+    //normal_learning("Normal_4");
+    pca_learning("mountain_car_3d_good.csv", -1, "blah",2, true);
+    //normal_learning("Mountain_MounCar_3D");
     //normal_learning_fitted_rmax("Mountain Car");
-    normal_learning4d_fitted_rmax("Mountain Car");
+    //normal_learning4d_fitted_rmax("Mountain Car");
     //    for(unsigned int i = 0; i < 19; i++)
 //    {
 //        normal_learning_blackjack("Blackjack_Normal");
@@ -127,7 +135,7 @@ void AAAI2015::normal_learning(string save_file)
     MountainCar3D* domain = new MountainCar3D();
 
     MountainCarExperimentArgs* experiment_args = new MountainCarExperimentArgs();
-    experiment_args->demonstrations = false;
+    experiment_args->demonstrations = true;
     experiment_args->num_steps = 2000;
     experiment_args->num_epochs = 50000;
     experiment_args->save_file = save_file;
@@ -275,10 +283,10 @@ void AAAI2015::pca_learning(string pca_file, int amount, string save_file, int d
     learning_args->amount = amount;
 
     vector<double> resolution;
-    resolution.push_back(0.072);
-    resolution.push_back(0.072);
-    resolution.push_back(0.0056);
-    resolution.push_back(0.0056);
+    resolution.push_back(0.1);
+    resolution.push_back(0.1);
+    resolution.push_back(0.1);
+    resolution.push_back(0.1);
     learning_args->resolution = resolution;
 
     QTilesReuse* learning_algorithm = new QTilesReuse(4, learning_args);
