@@ -2,6 +2,10 @@
 #include <fstream>
 #include <AAAI2015.h>
 #include <IROS2015.h>
+#include <HRI2016.h>
+#include "ros/ros.h"
+#include "std_msgs/String.h"
+
 //#include <tapkee/tapkee.hpp>
 //#include <tapkee/callbacks/dummy_callbacks.hpp>
 
@@ -9,15 +13,25 @@ using namespace std;
 
 void run_experiment()
 {
-    IROS2015* exp_iros = new IROS2015();
-    exp_iros->setup_experiments();
+    HRI2016* exp_hri = new HRI2016();
+//    IROS2015* exp_iros = new IROS2015();
+//    exp_iros->setup_experiments();
 
 //    AAAI2015* exp_aaai = new AAAI2015();
 //    exp_aaai->setup_experiments();
 }
 
-int main()
+void chatterCallback(const std_msgs::String::ConstPtr& msg)
 {
+    cout << msg->data.c_str() << endl;
+}
+
+int main(int argc, char **argv)
+{
+    ros::init(argc, argv, "listener");
+    ros::NodeHandle n;
+    ros::Subscriber sub = n.subscribe("/chatter", 1000, chatterCallback);
+    ros::spin();
     //srand(0);
 //    NPole* p = new NPole();
 //    p->init();
