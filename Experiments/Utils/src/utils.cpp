@@ -68,6 +68,19 @@ void utils::to_csv(vector<vector<double> >* data, string name)
     file.close();
 }
 
+void utils::to_csv_overwrite(vector<vector<double> >* data, string name)
+{
+    ofstream file (name);
+    for(unsigned int i = 0; i < data->size(); i++)
+    {
+        for(unsigned int j = 0; j < data->at(i).size(); j++)
+        {
+            if(j != data->at(i).size()-1) file << data->at(i).at(j) << ",";
+            else file << data->at(i).at(j) << endl;
+        }
+    }
+    file.close();
+}
 
 vector<vector<double> > utils::read_csv(string name)
 {
@@ -91,9 +104,18 @@ vector<vector<double> > utils::read_csv(string name)
     return csv_vals;
 }
 
+vector<vector<double> > utils::read_newest_csv(string name)
+{
+    string newest_name = newest_filename(name);
+    ifstream test_exists((newest_name).c_str());
+    if(!test_exists.good()) return vector<vector<double> >();
+    return read_csv(newest_name);
+}
+
 string utils::fix_filename(string name)
 {
     int it = 0;
+    name = name + "_1";
     while(true)
     {
         cout << name << endl;
@@ -101,19 +123,42 @@ string utils::fix_filename(string name)
         ifstream test_exists((name + ".csv").c_str());
         if(test_exists.good())
         {
-            if(it == 1)
-            {
-                name = name + "_1";
-            }
-            else
-            {
-                if(it < 11) name = name.substr(0, name.size()-2);
-                if(it >= 11) name = name.substr(0, name.size()-3);
-                name = name + "_" + to_string(it);
-            }
+            if(it < 11) name = name.substr(0, name.size()-2);
+            if(it >= 11 && it < 101) name = name.substr(0, name.size()-3);
+            if(it >= 101) name = name.substr(0, name.size()-4);
+            name = name + "_" + to_string(it);
         }
         else
         {
+            break;
+        }
+    }
+    name = name + ".csv";
+    return name;
+}
+
+string utils::newest_filename(string name)
+{
+    int it = 1;
+    name = name + "_1";
+    while(true)
+    {
+        cout << name << endl;
+        ifstream test_exists((name + ".csv").c_str());
+        if(test_exists.good())
+        {
+            if(it < 10) name = name.substr(0, name.size()-2);
+            if(it >= 10 && it < 100) name = name.substr(0, name.size()-3);
+            if(it >= 100) name = name.substr(0, name.size()-4);
+            it++;
+            name = name + "_" + to_string(it);
+        }
+        else
+        {
+            if(it < 10) name = name.substr(0, name.size()-2);
+            if(it >= 10 && it < 100) name = name.substr(0, name.size()-3);
+            if(it >= 100) name = name.substr(0, name.size()-4);
+            name = name + "_" + to_string(it-1);
             break;
         }
     }

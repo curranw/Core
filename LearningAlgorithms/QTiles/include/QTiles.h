@@ -12,6 +12,7 @@
 #include <iostream>
 #include <QElement.h>
 #include <ILearningAlgorithm.h>
+#include <utils.h>
 
 using namespace std;
 
@@ -47,14 +48,16 @@ public:
     virtual ~QTiles();
     void end_epoch();
     void init();
+    void output(string file);
+    void read(string file);
     bool no_new;
+    double alpha, gamma;
 private:
     QTilesArguments* m_args;
-    map<QElement*, vector<double> > eligability;
+    map<QElement*, vector<double> > eligibility;
     vector<QElement*> calculate_nearby_states(QElement::State s);
     QElement *add_tiles(int tile);
-    int tiles;
-    double alpha, gamma;
+    int num_tiles;
     int memory_size;
     int* tiles_array;
     int cur_it;
@@ -65,6 +68,7 @@ private:
     double cur_eps;
     set<QElement*> ele_to_update;
     unordered_map<QElement::Action, double> V_local;
+    pair<QElement::Action, double> eligibility_action_value;
 };
 
 #endif // QTILES_H

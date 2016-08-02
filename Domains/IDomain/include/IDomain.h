@@ -18,6 +18,7 @@ public:
     virtual void compute_possible_actions() = 0;
     virtual void get_possible_actions(vector<int> &possible_actions, map<int, vector<double> > &action_mapping);
     virtual void set_possible_actions(vector<int> possible_actions, map<int, vector<double> > action_mapping);
+    virtual double get_performance();
     bool m_accumulate_data;
 
 protected:

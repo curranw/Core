@@ -1,4 +1,4 @@
-set(CMAKE_CXX_COMPILER "g++")
+#set(CMAKE_CXX_COMPILER "g++")
 set(CMAKE_CXX_FLAGS "-g -std=c++0x -idirafter /usr/X11R6/include")
 set(CMAKE_VERBOSE_MAKEFILE "false")
 add_definitions(-DCLOCK_GETTIMEOFDAY)
@@ -6,7 +6,8 @@ project(ManifoldLearning)
 cmake_minimum_required(VERSION 2.8)
 FIND_PACKAGE(OpenMP REQUIRED)
 FIND_PACKAGE(Armadillo REQUIRED)
-FIND_PACKAGE(catkin REQUIRED COMPONENTS roscpp)
+FIND_PACKAGE(catkin REQUIRED COMPONENTS roscpp tf std_srvs)
+
 set(CMAKE_BUILD_TYPE "Release")
 
 #set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")

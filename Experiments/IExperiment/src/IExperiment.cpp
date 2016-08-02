@@ -6,6 +6,7 @@ IExperiment::IExperiment(IDomain* domain, ILearningAlgorithm *learning_algorithm
     m_domain = domain;
     m_learning_algorithm = learning_algorithm;
     m_exp_args = experiment_args;
+    finish_learning = false;
 }
 
 void IExperiment::run_experiment()
@@ -13,6 +14,7 @@ void IExperiment::run_experiment()
     this->init();
     for(unsigned int i = 0; i < m_exp_args->num_epochs; i++)
     {
+        if(finish_learning) break;
         this->epoch();
     }
     this->output_results();

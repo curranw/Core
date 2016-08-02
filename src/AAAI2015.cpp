@@ -1,14 +1,15 @@
 #include <AAAI2015.h>
 void AAAI2015::setup_experiments()
 {
-    for(unsigned int i = 0; i < 20; i++)
-    {
-        srand(time(NULL));
-        normal_learning("Normal_4");
-        //pca_learning("mountain_car_3d_good.csv", -1, "best_mountain_car",2, true);
-    }
-    //normal_learning("Normal_4");
-    pca_learning("mountain_car_3d_good.csv", -1, "blah",2, true);
+    normal_learning("Normal_4");
+//    for(unsigned int i = 0; i < 20; i++)
+//    {
+//        srand(time(NULL));
+//        normal_learning("Normal_4");
+//        //pca_learning("mountain_car_3d_good.csv", -1, "best_mountain_car",2, true);
+//    }
+//    //normal_learning("Normal_4");
+//    pca_learning("mountain_car_3d_good.csv", -1, "blah",2, true);
     //normal_learning("Mountain_MounCar_3D");
     //normal_learning_fitted_rmax("Mountain Car");
     //normal_learning4d_fitted_rmax("Mountain Car");
@@ -123,7 +124,7 @@ void AAAI2015::normal_learning(string save_file)
     learning_args->alpha = 0.1;
     learning_args->gamma = 0.99;
     learning_args->eligability = false;
-    learning_args->num_tiles = 10;
+    learning_args->num_tiles = 32;
 
     vector<double> resolution;
     resolution.push_back(0.1);

@@ -5,8 +5,7 @@
  *      Author: Will Curran
  */
 
-#ifndef MOUNTAINCAR_H_
-#define MOUNTAINCAR_H_
+#pragma once
 
 #include <math.h>
 #include <vector>
@@ -34,5 +33,3 @@ public:
 
 	virtual ~MountainCar();
 };
-
-#endif /* MOUNTAINCAR_H_ */

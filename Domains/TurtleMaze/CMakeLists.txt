@@ -10,6 +10,7 @@ file(GLOB TURTLEMAZE_SRC
 file(GLOB TURTLEMAZE_INCLUDE
     "include/*.h"
 )
+FIND_PACKAGE(catkin REQUIRED COMPONENTS roscpp tf std_srvs)
 
 add_library(${PROJECT_NAME} ${TURTLEMAZE_SRC} ${TURTLEMAZE_INCLUDE})
-target_link_libraries(${PROJECT_NAME} IDomain)
+target_link_libraries(${PROJECT_NAME} IDomain ${catkin_LIBRARIES})

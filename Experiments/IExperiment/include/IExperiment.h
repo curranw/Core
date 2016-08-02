@@ -46,5 +46,6 @@ public:
 
     int current_iteration;
     int cur_step;
+    bool finish_learning;
 
 };

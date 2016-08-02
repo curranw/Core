@@ -16,3 +16,8 @@ void IDomain::set_possible_actions(vector<int> possible_actions, map<int, vector
     m_possible_actions = possible_actions;
     m_action_mapping = action_mapping;
 }
+
+double IDomain::get_performance()
+{
+
+}
