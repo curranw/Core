@@ -21,7 +21,7 @@ public:
     void update(QUpdate update);
 
     void calculate_states();
-    void calculate_solution();
+    void calculate_solution(bool debug = false);
 
 
     map<QElement::State, int>* get_state_to_ind();

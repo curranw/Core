@@ -3,6 +3,7 @@
 #include <ValueIteration.h>
 #include <algorithm>
 #include <set>
+#include <tiles2.h>
 class FittedRMaxArgs : public ILearningArguments
 {
 public:
