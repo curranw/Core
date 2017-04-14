@@ -41,6 +41,7 @@ void MountainCarExperimentPCA::init()
 
 void MountainCarExperimentPCA::end_epoch()
 {
+    //cout << tot_reward << endl;
     IExperiment::end_epoch();
     if(m_exp_args->iterative)
     {

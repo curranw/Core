@@ -119,5 +119,6 @@ void tileswrap(
     int num_ints);             // number of integer variables
 
 
+unsigned int* get_rand_seq(unsigned int *rndseq_input);
 
 #endif

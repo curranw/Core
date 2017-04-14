@@ -210,7 +210,8 @@ void CXSwimmer::Reset()
     for (int i = swimmer.GetSegments(); --i >= 0;)
     {
         double r = double(rand())/RAND_MAX;
-        vx[2 * i + 2] = -3.14159 + r * (3.14159 + 3.14159);
+        //vx[2 * i + 2] = -3.14159 + r * (3.14159 + 3.14159);
+        vx[2 * i + 2] = -1.0 + r * (1.0 + 1.0);
         //vx[2 * i + 2] = 3.141592653 / 2;
         //vx[2 * i + 2] = -3.141592653;
         vx[2 * i + 3] = 0.0;

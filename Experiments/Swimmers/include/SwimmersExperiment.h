@@ -39,6 +39,7 @@ private:
     vector<vector<double> > bad_data;
     vector<double> good_rewards;
     vector<double> bad_rewards;
+    vector<int> table_sizes;
 
     double performance;
     vector<double> tot_performance;

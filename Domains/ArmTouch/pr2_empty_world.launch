@@ -1,0 +1,23 @@
+<launch>
+
+  <!-- start up empty world -->
+  <arg name="gui" default="true"/>
+  <arg name="paused" default="false"/>
+  <!-- TODO: throttled not implemented in gazebo_ros/empty_world.launch
+  <arg name="throttled" default="false"/>
+  -->
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="paused" value="$(arg paused)" />
+    <arg name="world_name" value="$(find Core)/Domains/ArmTouch/arm_touch_pr2.world"/>
+    <!-- TODO: throttled not implemented in gazebo_ros/empty_world.launch
+    <arg name="throttled" value="$(arg throttled)" />
+    -->
+  </include>
+
+  <!-- start pr2 robot -->
+  <include file="$(find pr2_gazebo)/launch/pr2.launch"/>
+
+</launch>
+

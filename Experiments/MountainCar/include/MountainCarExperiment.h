@@ -7,6 +7,7 @@
 #include <QTilesReuse.h>
 #include <QTiles.h>
 #include <FittedRMax.h>
+#include <DelayedQLearningTiles.h>
 
 using namespace std;
 
@@ -25,6 +26,7 @@ public:
     MountainCarExperiment(MountainCar *domain, QTiles *learning_algorithm, MountainCarExperimentArgs* exp_args);
     MountainCarExperiment(MountainCar *domain, FittedRMax *learning_algorithm, MountainCarExperimentArgs* exp_args);
     MountainCarExperiment(MountainCar3D *domain, FittedRMax *learning_algorithm, MountainCarExperimentArgs* exp_args);
+    MountainCarExperiment(MountainCar3D *domain, DelayedQLearningTiles *learning_algorithm, MountainCarExperimentArgs* exp_args);
     void end_epoch();
     void output_results();
     virtual ~MountainCarExperiment();

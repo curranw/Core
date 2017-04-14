@@ -1,0 +1,281 @@
+<launch>
+	<include file="$(find gazebo_ros)/launch/empty_world.launch">
+		<arg name="paused" value="false"/>
+		<arg name="verbose" value="false"/>
+		<arg name="use_sim_time" value="true"/>
+		<arg name="gui" value="true"/>
+		<arg name="headless" value="false"/>
+		<arg name="debug" value="false"/>	
+	</include>
+
+
+
+	<group ns="robot1">
+		<param name="tf_prefix" value="robot1"/>
+		<arg name="robot_xacro" default="$(find jaco_on_table)/urdf/jaco_on_table_robot_gazebo_ctrl.urdf.xacro"/>
+
+	    # Load the grasp fix plugin for gazebo?
+	    <arg name="load_grasp_fix" default="false"/>
+
+	    # Specify a name for the robot
+		<arg name="robot_name" default="jaco"/>
+
+	    <arg name="x" default="0"/>
+	    <arg name="y" default="0"/>
+	    <arg name="z" default="0"/>
+	    
+	    <arg name="gazebo_world_file" default="worlds/empty.world"/>
+
+	    # set to true if the gazebo_state_plugin/gazebo_object_info world plugin should be loaded
+	    <arg name="load_gazebo_objects_plugin" default="true"/>
+	    
+	    # set to true if the gazebo_state_plugin/gazebo_map_publisher world plugin should be loaded
+	    <arg name="load_gazebo_map_plugin" default="false"/>
+
+	    <arg name="load_joint_state_publisher" default="false"/>
+		<arg name="joint_state_publisher_topic" default="/robot1/jaco/joint_control"/>
+		
+	    <arg name="load_robot_state_publisher" default="true"/>
+		<arg name="joint_states_topic" default="jaco/joint_state"/>
+		
+	    # load the world plugin loader (in package gazebo_world_plugin_loader) which launches several
+	    # world plugins according to the specification in the ROS parameters. Note that you will
+	    # have to load those parameters on the ROS parameter server BEFORE gazebo gets launched. 
+	    <arg name="load_world_plugins" default="false"/>
+
+	    # set to true if a Joint::SetVelocity() is to be used instead of
+	    # Joint::SetForce(). Note that this will require loading different PID values.
+	    # At the moment, Joint::SetForce() doesn't work well in Indigo, so it defaults
+	    # to true. Also in Jade, SetForce() doesn't work great, the target velocity values
+	    # are not as stable - tried it with a variety of PID values.
+	    <arg name="gazebo_use_set_velocity" default="true"/>
+	    <param name="jaco/gazebo_use_set_velocity" value="$(arg gazebo_use_set_velocity)"/>
+	   
+	    # internally used to switch between cofing files for local implementation 
+	    <arg if="$(arg gazebo_use_set_velocity)" name="local_controller_config_file" default="$(find jaco_gazebo)/config/JacoControlLocalImpl.SetVelocity.yaml"/>
+	    <arg unless="$(arg gazebo_use_set_velocity)" name="local_controller_config_file" default="$(find jaco_gazebo)/config/JacoControlLocalImpl.yaml"/>
+	    
+	    <arg name="load_ros_controllers" default="false"/>
+	    <arg if="$(arg load_ros_controllers)" name="controller_config_file" default="$(find jaco_gazebo)/config/JacoControl.yaml"/>
+	    <arg unless="$(arg load_ros_controllers)" name="controller_config_file" default="$(arg local_controller_config_file)"/>
+
+	    # A position controller is always loaded, but you may choose to additionally also load a velocity controller.
+	    # Exception: when load_ros_controllers=true, only a position OR a velocity controller is loaded (both not supported by DefaultRobotHWSim)
+	    # so in this case if load_velocity_controller is true, the position controller is *not* loaded.
+	    <arg name="load_velocity_controller" default="true"/>
+	   
+	    # Need to load the URDF "transmission" tags only if using ROS controllers, but it doesn't harm
+	    # to load them as well when not using the local joint controller implementation.
+	    <arg if="$(arg load_velocity_controller)" name="transmission_vel" value="true"/>
+	    <arg unless="$(arg load_velocity_controller)" name="transmission_vel" value="false"/>
+	    <arg if="$(arg load_velocity_controller)" name="transmission_pos" value="false"/>
+	    <arg unless="$(arg load_velocity_controller)" name="transmission_pos" value="true"/>
+
+		# if the xacro file (robot_xacro) needs additional arguments to xacro.py, put them in here.
+		<arg name="xacro_arguments" default="sensor_on_table:=false 
+	        use_ros_control:=$(arg load_ros_controllers) 
+	        load_grasp_fix:=$(arg load_grasp_fix) 
+	        add_transmission_pos:=$(arg transmission_pos)
+	        add_transmission_vel:=$(arg transmission_vel)
+	        trajectory_param_namespace:=robot1/jaco_trajectory
+	        robot_components_namespace:=robot1/jaco"/>
+
+		#####################################
+		# Load robot_description on parameter server
+		#####################################
+		<param name="robot_description" command="$(find xacro)/xacro --inorder '$(arg robot_xacro)' $(arg xacro_arguments)"/>
+
+		#####################################
+	    # Joint trajectory server parameters
+		#####################################
+	    <rosparam file="$(find jaco_gazebo)/config/JointTrajectoryParams.yaml" command="load" ns=""/>
+
+	    ########################################
+	    # Load arm joint and gripper joint names
+	    ########################################
+	    <arg name="names_config_file" default="$(find jaco_joints)/config/JacoJoints.yaml"/>
+	    <include file="$(find jaco_joints)/launch/init_jaco_joints.launch">
+	        <arg name="names_config_file" default="$(arg names_config_file)"/>
+	    </include>
+
+		#####################################
+		# Load gazebo 
+		#####################################
+	    ##############################################
+	    # Helper launch file which can be included to 
+	    # launch the jaco arm in gazebo. It allows
+	    # you to specify the name of the robot which will
+	    # be used in the gazebo world. It expects
+	    # the robot to be loaded on the parameter server
+	    # in "robot_description". This model has to be
+	    # the one to which the arm is attached.
+	    # Additionally, this launch file provides 
+	    # the option to launch a joint_state_publisher
+	    # and a robot_state_publisher.
+	    # 
+	    # You will probably also need to load gazebo
+	    # "world" plugins to control the arm. You can use
+	    # the argument extra_gazebo_args to do this.
+	    # See comment below with the argument.
+	    #
+	    # Also, after gazebo is launched, you will
+	    # probably need to send out a service request
+	    # to gazebo to set the physics properties.
+	    # These properties can be set with the gazebo service
+	    # gazebo_msgs/SetPhysicsProperties.srv
+	    # which has a field in which you can set the 
+	    # ODE physics properties:
+	    # gazebo_msgs/ODEPhysics.msg
+	    ##############################################
+
+	    # Parameter required for gazebo_joint_control/GazeboJointStatePublisher.
+	    # We need to publish values NOT between -PI and PI for arm joints 1 and 2, because
+	    # its lower limit is lower than -PI. When using Gazebo, it was not possible to use lower limit
+	    # greater than higher limit in the URDF, e.g. 2.5..0.73.
+	    # MoveIt however will detect an angle of 3.0 as invalid if we have limits such as -3.9..0.73.
+	    # So we need to publish angles between -3.9..0.73. This has to be done for all revolute joints
+	    # with such limits where lower_limit is greater than higher_limit.
+	    <arg name="preserve_original_angles" default="arm_1_joint, arm_2_joint"/>
+
+	    # set the joint state topic such that any subscribers can read it from parameter	
+	    <param name="joint_state_control_topic" value="$(arg joint_state_publisher_topic)"/>
+
+	    # Parameter required for gazebo_joint_control/GazeboJointStatePublisher.
+	    # set the joint states topic as ROS parameter: The joint state publisher
+	    # will publish the joint states on this topic. 
+	    <param name="publish_joint_states_topic" value="$(arg joint_states_topic)"/>
+	    
+	    # Parameter required for gazebo_joint_control/GazeboJointStatePublisher.
+	    # Separated by commas, specify the joint names for which the published values
+	    # should *not* be capped between -PI and PI, and instead the original values
+	    # in gazebo should be published.
+	    <param name="preserve_original_angles" value="$(arg preserve_original_angles)"/>
+
+
+	    ##############################################
+	    # Launch files including this one may load
+	    # required *system* plugins by setting the
+	    # "extras_gazebo_args" argument (see also
+	    # $(find gazebo_ros)/launch/empty_world.launch).
+	    # Plugins can be loaded with the '-s | --server-plugin'
+	    # argument (see also gzserver --help).
+	    # Important: should not forget to also set
+	    # required plugin ROS parameters, if needed.
+	    ##############################################
+
+		###############################################
+		# spawn robot 
+		###############################################
+		<node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" 
+	        args="-param /robot1/robot_description -urdf -x $(arg x) -y $(arg y) -z $(arg z) -model $(arg robot_name)"/>
+
+	  
+		###############################################
+		# Given the published joint states, publish tf for the robot links
+		# !!! Had some problems with /tf. Errors in the form
+		# "Could not find a connection between 'camera_depth_optical_frame' and '6_hand_limb' because they 
+		# are not part of the same tree. Tf has two or more unconnected trees."
+		# This happened always with camera_depth_optical_frame, but with different other links. 
+		# Starting only gazebo, but without any MoveIt!, a  
+		#  $ rosrun tf tf_echo camera_depth_optical_frame 6_hand_limb
+		# revealed sometimes the same error, sometimes it said camera_depth_optical_frame does not exist..... 
+		# However, a 
+		#  $ rosrun tf view_frames
+		# listening to tf for 5 seconds showed the right three.
+		# So it seems tf is not waited for long enough by MoveIt..
+		# Hence, the only solution now is to start gazebo first, wait until the first /tf transforms have
+		# come in, and then start MoveIt.
+		###############################################
+<!-- 		<node if="$(arg load_robot_state_publisher)" name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen">
+			<remap from="joint_states" to="$(arg joint_states_topic)"/>
+			<param name="publish_frequency" type="double" value="100.0"/>
+			<param name="tf_prefix" value="robot1"/>
+		</node>
+
+
+	    #############################################
+		# joint_state_publisher is the GUI to set the target joint angles. 
+	    # It publishes to joint_states, which we will remap to joint_control
+	    #############################################
+		
+	    <node if="$(arg load_joint_state_publisher)" name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+			<param name="use_gui" value="true" />
+			<param name="rate" value="10" />
+			<remap from="joint_states" to="$(arg joint_state_publisher_topic)" />
+		</node> -->
+
+		#####################################
+		# Load controllers and/or control parameters 
+		#####################################
+<!-- 	    <include if="$(arg load_ros_controllers)" file="$(find jaco_gazebo)/launch/jaco_control.launch">
+	        <arg name="config_file" value="$(arg controller_config_file)"/>
+	        <arg name="load_joint_state_controller" value="true"/>
+	        <arg name="load_controllers" value="true"/>
+	        <arg if="$(arg load_velocity_controller)" name="load_position_controllers" value="false"/>
+	        <arg unless="$(arg load_velocity_controller)" name="load_position_controllers" value="true"/>
+	        <arg if="$(arg load_velocity_controller)" name="load_velocity_controllers" value="true"/>
+	        <arg unless="$(arg load_velocity_controller)" name="load_velocity_controllers" value="false"/>
+	    </include> -->
+<!-- 	    <include unless="$(arg load_ros_controllers)" file="$(find jaco_gazebo)/launch/jaco_control.launch">
+	        <arg name="config_file" value="$(arg controller_config_file)"/>
+	        <arg name="load_joint_state_controller" value="false"/>
+	        <arg name="load_controllers" value="false"/>
+	        <arg name="load_position_controllers" value="true"/>
+	        <arg name="load_velocity_controllers" value="$(arg load_velocity_controller)"/>
+	    </include> -->
+    <arg name="config_file" value="$(arg controller_config_file)"/>
+    <arg name="load_joint_state_controller" value="false"/>
+    <arg name="load_controllers" value="false"/>
+    <arg name="load_position_controllers" value="true"/>
+    <arg name="load_velocity_controllers" value="$(arg load_velocity_controller)"/>
+
+    <!-- Load joint controller configurations from YAML file to parameter server -->
+    <rosparam file="$(arg config_file)" command="load"/>
+
+    <param name="/gazebo/load_velocity_controllers" value="$(arg load_velocity_controllers)"/>
+
+
+    <include file="$(find jaco_joints)/launch/init_jaco_joints.launch">
+        <arg name="names_config_file" default="$(arg names_config_file)"/>
+    </include>
+
+    <arg if="$(arg load_position_controllers)"
+       name="position_controllers" value=
+          "jaco/arm_0_joint_position_controller 
+          jaco/arm_1_joint_position_controller 
+          jaco/arm_2_joint_position_controller 
+          jaco/arm_3_joint_position_controller
+          jaco/arm_4_joint_position_controller 
+          jaco/arm_5_joint_position_controller
+          jaco/finger_joint_0_position_controller
+          jaco/finger_joint_2_position_controller
+          jaco/finger_joint_4_position_controller"/>
+    <arg unless="$(arg load_position_controllers)"
+       name="position_controllers" value=""/>
+
+    <arg if="$(arg load_velocity_controllers)"
+       name="velocity_controllers" value=
+          "jaco/arm_0_joint_velocity_controller 
+          jaco/arm_1_joint_velocity_controller 
+          jaco/arm_2_joint_velocity_controller 
+          jaco/arm_3_joint_velocity_controller
+          jaco/arm_4_joint_velocity_controller 
+          jaco/arm_5_joint_velocity_controller
+          jaco/finger_joint_0_velocity_controller
+          jaco/finger_joint_2_velocity_controller
+          jaco/finger_joint_4_velocity_controller"/>
+    <arg unless="$(arg load_velocity_controllers)"
+       name="velocity_controllers" value=""/>
+
+    <arg if="$(arg load_joint_state_controller)" name="joint_state_controller" value="joint_state_controller"/>
+    <arg unless="$(arg load_joint_state_controller)" name="joint_state_controller" value=""/>
+
+    <!-- load the controllers -->
+    <node if="$(arg load_controllers)" name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+        output="screen" ns="/jaco" 
+        args="$(arg position_controllers) $(arg velocity_controllers) $(arg joint_state_controller)"/>
+	    # Load joint controller configurations from YAML file to parameter server. In case
+	    # ROS controllers are used, this is done by the jaco_control.launch file.
+	    <rosparam unless="$(arg load_ros_controllers)" file="$(arg controller_config_file)" command="load"/>
+	</group>
+</launch>

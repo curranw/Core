@@ -1,0 +1,8 @@
+<launch>
+
+    <include file="$(find Core)/LaunchHelpers/turtlebot_world.launch">
+        <arg name="world_file" value="$(find Core)/Domains/TurtleStairs/stairs.world"/>
+	<arg name="gui" value="true"/>
+        <arg name="x" value="5"/>
+    </include>
+</launch>

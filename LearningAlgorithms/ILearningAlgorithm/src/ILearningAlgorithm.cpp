@@ -35,6 +35,11 @@ void ILearningAlgorithm::read(string file)
 
 }
 
+ILearningAlgorithm::~ILearningAlgorithm()
+{
+
+}
+
 void ILearningAlgorithm::set_possible_actions(vector<int> possible_actions)
 {
     m_possible_actions = possible_actions;

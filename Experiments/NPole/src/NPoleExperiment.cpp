@@ -46,9 +46,9 @@ void NPoleExperiment::output_results()
     IExperiment::output_results();
     if(m_domain->m_accumulate_data)
     {
-        if(good_data.size() >= 50000) utils::to_csv(&good_data, "converged_state_data_pole_good");
+        if(good_data.size() >= 50000) utils::to_csv2d<double>(&good_data, "converged_state_data_pole_good");
 
-        if(bad_data.size() >= 50000) utils::to_csv(&bad_data, "converged_state_data_pole_bad");
+        if(bad_data.size() >= 50000) utils::to_csv2d<double>(&bad_data, "converged_state_data_pole_bad");
     }
     m_domain->calculate_pos(true);
 

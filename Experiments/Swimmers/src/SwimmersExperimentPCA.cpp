@@ -15,6 +15,7 @@ SwimmersExperimentPCA::SwimmersExperimentPCA(Swimmers *domain, QTilesReuse *lear
 
 void SwimmersExperimentPCA::init()
 {
+    cur_dim_it = 0;
     running_avg = 0;
     potential_prev = 0;
     IExperiment::init();
@@ -32,7 +33,7 @@ void SwimmersExperimentPCA::step()
     m_domain->step(action_value.first);
 
     vector<double> next_state = m_domain->get_state();
-    double potential_post = m_domain->get_potential();
+    //double potential_post = m_domain->get_potential();
     //cout << potential_prev << "," << potential_post << "," << -(potential_prev - .99 * potential_post) << endl;
 
     double reward = m_domain->get_reward();
@@ -46,7 +47,7 @@ void SwimmersExperimentPCA::step()
     m_learning_algorithm->update(update_params);
 
     tot_reward += reward;
-    potential_prev = potential_post;
+    //potential_prev = potential_post;
     if(m_domain->m_accumulate_data) m_accumulated_data.push_back(state);
     if(m_domain->m_accumulate_data) m_accumulated_rewards.push_back(reward);
 }
@@ -54,16 +55,17 @@ void SwimmersExperimentPCA::step()
 void SwimmersExperimentPCA::end_epoch()
 {
     m_domain->viz = false;
-    static int it = 0;
     if(m_exp_args->iterative)
     {
-        it++;
+        cur_dim_it++;
         if(m_learning_algorithm->is_converged())
         {
+            cout << cur_dim_it << endl;
+            table_iterations.push_back(cur_dim_it);
             table_sizes.push_back(m_learning_algorithm->get_table_size());
             current_dimension++;
             m_learning_algorithm->set_projection_dimension(current_dimension);
-            it = 0;
+            cur_dim_it = 0;
         }
     }
     last_running_avg = running_avg;
@@ -72,21 +74,25 @@ void SwimmersExperimentPCA::end_epoch()
     if(iteration % 100 == 0) cout << m_learning_algorithm->get_table_size() << "," << running_avg << endl;
     performance = 0;
 
-    //iteration++;
+    //cout << tot_reward << endl;
+    IExperiment::end_epoch();
 //    if(iteration == m_exp_args->num_epochs-1)
 //    {
 //        cout << "OMG THIS IS AWESOME" << endl;
 //        cin.get();
 //        m_domain->viz = true;
 //    }
-    IExperiment::end_epoch();
 }
 
 void SwimmersExperimentPCA::output_results()
 {
     table_sizes.push_back(m_learning_algorithm->get_table_size());
-    utils::to_csv(&table_sizes, m_exp_args->save_file + "-table_size");
+    cout << cur_dim_it << endl;
+    table_iterations.push_back(cur_dim_it);
+    utils::to_csv<int>(&table_sizes, m_exp_args->save_file + "-table_size");
+    utils::to_csv<int>(&table_iterations, m_exp_args->save_file + "-table_iterations");
     IExperiment::output_results();
+    //m_learning_algorithm->output("QTable_"  + m_exp_args->save_file);
 }
 
 SwimmersExperimentPCA::~SwimmersExperimentPCA()

@@ -1,0 +1,100 @@
+<launch>
+
+	<include file="$(find gazebo_ros)/launch/empty_world.launch">
+		<arg name="paused" value="false"/>
+		<arg name="verbose" value="false"/>
+		<arg name="use_sim_time" value="true"/>
+		<arg name="gui" value="true"/>
+		<arg name="headless" value="false"/>
+		<arg name="debug" value="false"/>
+		<arg name="world_name" value="$(find Core)/Domains/ArmTouch/arm_touch.world"/>
+	</include>
+
+		  <param name="robot_description"
+			 command="$(find xacro)/xacro.py '$(find manipulator_h_description)/urdf/manipulator_h.xacro'" />
+	
+
+
+
+	<group ns="robot1">
+
+		<rosparam file="$(find manipulator_h_gazebo)/config/position_controller.yaml" command="load"/>
+	  
+		<node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+				args="-urdf -model robot1 -param /robot_description -Y 3.14159"/>
+
+<!-- 	    <rosparam file="$(find manipulator_h_gazebo)/config/position_controller.yaml" command="load"/>
+	  	<node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+			output="screen" args="robotis_manipulator_h/joint_state_controller
+					       		    	robotis_manipulator_h/joint1_position
+					       		    	robotis_manipulator_h/joint2_position
+					       		  	    robotis_manipulator_h/joint3_position
+					      		 	    robotis_manipulator_h/joint4_position
+					     		 	    robotis_manipulator_h/joint5_position
+					      		 	    robotis_manipulator_h/joint6_position"/> -->
+
+<!-- 		<rosparam file="$(find manipulator_h_gazebo)/config/velocity_controller.yaml" command="load"/>
+	  	<node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+			output="screen" args="robotis_manipulator_h/joint_state_controller
+					       		    	robotis_manipulator_h/joint1_velocity
+					       		    	robotis_manipulator_h/joint2_velocity
+					       		  	    robotis_manipulator_h/joint3_velocity
+					      		 	    robotis_manipulator_h/joint4_velocity
+					     		 	    robotis_manipulator_h/joint5_velocity
+					      		 	    robotis_manipulator_h/joint6_velocity"/> -->
+
+		<rosparam file="$(find manipulator_h_gazebo)/config/effort_controller.yaml" command="load"/>
+	  	<node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+			output="screen" args="robotis_manipulator_h/joint_state_controller
+					       		    	robotis_manipulator_h/joint1_effort
+					       		    	robotis_manipulator_h/joint2_effort
+					       		  	    robotis_manipulator_h/joint3_effort
+					      		 	    robotis_manipulator_h/joint4_effort
+					     		 	    robotis_manipulator_h/joint5_effort
+					      		 	    robotis_manipulator_h/joint6_effort"/>
+
+
+		</group>
+
+		<group ns="robot2">
+	  
+		<node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+				args="-urdf -model robot2 -param /robot_description -x 0.5"/>
+
+<!-- 		<rosparam file="$(find manipulator_h_gazebo)/config/position_controller.yaml" command="load"/>
+	  	<node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+			output="screen" args="robotis_manipulator_h/joint_state_controller
+					       		    	robotis_manipulator_h/joint1_position
+					       		    	robotis_manipulator_h/joint2_position
+					       		  	    robotis_manipulator_h/joint3_position
+					      		 	    robotis_manipulator_h/joint4_position
+					     		 	    robotis_manipulator_h/joint5_position
+					      		 	    robotis_manipulator_h/joint6_position"/> -->
+
+<!-- 		<rosparam file="$(find manipulator_h_gazebo)/config/velocity_controller.yaml" command="load"/>		      		 	    
+		<node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+			output="screen" args="robotis_manipulator_h/joint_state_controller
+					       		    	robotis_manipulator_h/joint1_velocity
+					       		    	robotis_manipulator_h/joint2_velocity
+					       		  	    robotis_manipulator_h/joint3_velocity
+					      		 	    robotis_manipulator_h/joint4_velocity
+					     		 	    robotis_manipulator_h/joint5_velocity
+					      		 	    robotis_manipulator_h/joint6_velocity"/> -->
+
+
+<!-- 		<rosparam file="$(find manipulator_h_gazebo)/config/joint_traj_controller.yaml" command="load"/>		      		 	    
+		<node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+			output="screen" args="robotis_manipulator_h"/> -->
+
+<!--		<rosparam file="$(find manipulator_h_gazebo)/config/effort_controller.yaml" command="load"/>		      		 	    
+		<node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+			output="screen" args="robotis_manipulator_h/joint_state_controller
+					       		    	robotis_manipulator_h/joint1_effort
+					       		    	robotis_manipulator_h/joint2_effort
+					       		  	    robotis_manipulator_h/joint3_effort
+					      		 	    robotis_manipulator_h/joint4_effort
+					     		 	    robotis_manipulator_h/joint5_effort
+					      		 	    robotis_manipulator_h/joint6_effort"/>
+-->
+	</group>
+</launch>

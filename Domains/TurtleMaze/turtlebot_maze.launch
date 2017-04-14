@@ -3,7 +3,7 @@
         <arg name="world_file" value="$(find Core)/Domains/TurtleMaze/maze.world"/>
 	<arg name="gui" value="false"/>
     </include>
-    <node name="map_server" pkg="map_server" type="map_server" args="$(find Core)/Domains/TurtleMaze/maze_map.yaml"/>
+<!--    <node name="map_server" pkg="map_server" type="map_server" args="$(find Core)/Domains/TurtleMaze/maze_map.yaml"/> -->
 <!--    <node name="amcl" pkg="amcl" type="amcl">
         <param name="update_min_d" value="0.05"/>
         <param name="update_min_a" value="0.5"/>

@@ -1,0 +1,208 @@
+#ifndef LLE_H
+#define LLE_H
+#include "MatVec.h"
+#include <string>
+
+
+/***************************************************
+  LLE class to compute the d_out - dimensional 
+   Locally Linear Embedding of a matrix using 
+   the k nearest neighbors
+
+    Implementation based on the algorithm outlined in
+     'An Introduction to Locally Linear Embedding'
+        by L. Saul and S. Roweis, 2001
+
+    Using imrovements suggested in
+     'Locally Linear Embedding for Classification'
+        by D. deRidder and R.P.W. Duin, 2002
+
+    Created by Jake Vanderplas
+     vanderplas@astro.washington.edu
+     November 2008
+****************************************************/
+class LLE_{
+ protected:
+  std::string filename_;
+  bool file_is_fits_;
+
+  Matrix<double> training_data_;
+  Matrix<double> training_proj_;
+  Matrix<int> training_nbrs_;
+  
+  Matrix<double> weight_matrix_;
+  Vector<double> sigma_;
+
+  int N_;  //number of training points
+  int Ntest_;  //number of test points
+  int k_;     //number of nearest neighbors
+  int d_in_;  //input dimension (training and test)
+  int d_out_; //output dimension
+
+  double var_;//variance for learning d_out
+  
+  bool learn_d_out_;
+  bool training_proj_computed_;
+  bool quiet_;
+
+  
+  /************************************************************
+    cmpnbrs_(bool train)
+     helper function for computing nearest neighbors.
+
+      if train==true, then determine the k nearest neighbors of
+       the training sample within the training sample, and save
+       them to training_nbrs_
+      
+      if train==false, then determine the k nearest neighbors of
+       the test sample within the training sample, and save them
+       to test_neighbors_
+  ************************************************************/
+  void cmpnbrs_();
+
+  /************************************************************
+    cmpweight_(bool train)
+     helper function for computing weight matrix.
+
+      if train==true, then use training_nbrs to compute the 
+       training weight matrix
+      
+      if train==false, then use test_nbrs to compute the 
+       test weight matrix
+  ************************************************************/
+  virtual void cmpweight_(bool train);
+  
+  /************************************************************
+    cmp_training_proj_()
+     compute the projection of the training data
+  ************************************************************/
+  virtual void cmp_training_proj_();
+
+  /************************************************************
+    cmp_test_proj_()
+     compute the projection of given test_data
+  ************************************************************/
+  void cmp_test_proj_();
+  
+  /************************************************************
+    compute_training_nbrs()
+     if neighbors are already computed, do nothing.
+     if neighbors need to be determined, find the k nearest
+      neighbors of each training point and save them 
+      to training_nbrs_
+  ************************************************************/
+  void compute_training_nbrs();
+  
+  /************************************************************
+    compute_test_nbrs()
+     if neighbors are already computed, do nothing.
+     if neighbors need to be determined, find the k nearest
+      neighbors of each test point and save them to test_nbrs_
+  ************************************************************/
+  void compute_test_nbrs();
+  
+  /************************************************************
+    compute_training_weights()
+  ************************************************************/
+  void compute_training_weights();
+  
+  /************************************************************
+    compute_test_weights()
+  ************************************************************/
+  void compute_test_weights();
+
+  /************************************************************
+    init()
+     initializes all class data
+  ************************************************************/
+  void init();
+  
+  void set_training_data(const Matrix<double>& training_data);
+  void set_test_data(const Matrix<double>& test_data);
+  void clear_test_data();
+  
+ public:
+  LLE();
+
+  LLE(const Matrix<double>& training_data);
+
+  LLE(const std::string& filename){init(); load_fits(filename);}
+  
+  void load_fits(const std::string& filename);
+  
+  void load_ascii(const std::string& filename);
+
+  //these are for RLLE:
+  virtual void set_hessian(bool);
+  virtual void set_r(double);
+
+  void set_k(int k){k_=k;}
+  void set_d_out(int d_out){d_out_ = d_out;}
+  void set_var(double var){var_ = var; learn_d_out_=true;}
+  void set_quiet(double quiet){quiet_ = quiet;}
+
+  virtual void check_inputs();
+
+  
+  /************************************************************
+    compute_sigma()
+     creates a vector of reconstruction errors.
+     for each point, find the optimal linear reconstruction
+     based on its k nearest neighbors, and determine the 
+     reconstruction error based on this
+  ************************************************************/
+  void compute_sigma();
+  
+  /************************************************************
+    compute_d_out()
+     use the local variance of each neighborhood to compute
+     d_out such that, the conserved variance v_i of each 
+     neighborhood i satisfies 
+        mean(v_i) >= var_
+  ************************************************************/
+  int compute_d_out();
+
+  
+  /************************************************************
+    compute_projection()
+     no arguments: compute the projection of the training data
+     with argument: compute the projection of given test_data
+  ************************************************************/
+  
+  /************************************************************
+    whiten()
+     whiten the training matrix
+  ************************************************************/
+  void whiten();
+
+  /************************************************************
+    updateFITS()
+     saves the projection to the original fits file
+  ************************************************************/
+  void update_fits();
+
+  /************************************************************
+    ID()
+     returns a unique ID string for the procedure, ie LLEK15D2
+  ************************************************************/
+  virtual std::string ID();
+
+  /************************************************************
+    dump()
+  ************************************************************/
+  virtual void dump(std::ostream& o = std::cout);
+
+  /************************************************************
+    public routines to compute projections
+  ************************************************************/
+  void compute_projection();
+  void compute_projection(const Matrix<double>& test_data);
+
+  /************************************************************
+    routines to access test_proj_ and training_proj_
+  ************************************************************/
+  const Matrix<double>& test_projection() const{return test_proj_;}
+  const Matrix<double>& training_projection() const{return training_proj_;}
+};
+
+#endif //LLE_H

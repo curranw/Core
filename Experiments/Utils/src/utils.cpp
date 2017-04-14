@@ -29,44 +29,20 @@ vector<double> utils::moving_average(vector<double>* data, int bin_size)
     return moving_average;
 }
 
-void utils::to_csv(vector<double>* data, string name)
-{
-    name = fix_filename(name);
-    ofstream file (name);
-    for(unsigned int i = 0; i < data->size(); i++)
-    {
-        if(i != data->size()-1) file << data->at(i) << ",";
-        else file << data->at(i) << endl;
-    }
-    file.close();
-}
 
-void utils::to_csv(vector<int>* data, string name)
-{
-    name = fix_filename(name);
-    ofstream file (name);
-    for(unsigned int i = 0; i < data->size(); i++)
-    {
-        if(i != data->size()-1) file << data->at(i) << ",";
-        else file << data->at(i) << endl;
-    }
-    file.close();
-}
+//void utils::to_csv(vector<int>* data, string name)
+//{
+//    name = fix_filename(name);
+//    ofstream file (name);
+//    for(unsigned int i = 0; i < data->size(); i++)
+//    {
+//        if(i != data->size()-1) file << data->at(i) << ",";
+//        else file << data->at(i) << endl;
+//    }
+//    file.close();
+//}
 
-void utils::to_csv(vector<vector<double> >* data, string name)
-{
-    name = fix_filename(name);
-    ofstream file (name);
-    for(unsigned int i = 0; i < data->size(); i++)
-    {
-        for(unsigned int j = 0; j < data->at(i).size(); j++)
-        {
-            if(j != data->at(i).size()-1) file << data->at(i).at(j) << ",";
-            else file << data->at(i).at(j) << endl;
-        }
-    }
-    file.close();
-}
+
 
 void utils::to_csv_overwrite(vector<vector<double> >* data, string name)
 {
@@ -82,35 +58,32 @@ void utils::to_csv_overwrite(vector<vector<double> >* data, string name)
     file.close();
 }
 
-vector<vector<double> > utils::read_csv(string name)
-{
-    ifstream file (name);
-    std::string line;
-    vector<vector<double> > csv_vals;
-    while(std::getline(file, line))
-    {
-        vector<double> csv_val;
-        std::istringstream s(line);
-        std::string field;
 
-        while (getline(s, field,','))
-        {
-            double val = stod(field);
-            csv_val.push_back(val);
-        }
-        csv_vals.push_back(csv_val);
-    }
-    file.close();
-    return csv_vals;
-}
 
-vector<vector<double> > utils::read_newest_csv(string name)
-{
-    string newest_name = newest_filename(name);
-    ifstream test_exists((newest_name).c_str());
-    if(!test_exists.good()) return vector<vector<double> >();
-    return read_csv(newest_name);
-}
+
+//vector<vector<unsigned int> > utils::read_csv(string name)
+//{
+//    ifstream file (name);
+//    std::string line;
+//    vector<vector<unsigned int> > csv_vals;
+//    while(std::getline(file, line))
+//    {
+//        vector<unsigned int> csv_val;
+//        std::istringstream s(line);
+//        std::string field;
+
+//        while (getline(s, field,','))
+//        {
+//            double val = stoi(field);
+//            csv_val.push_back(val);
+//        }
+//        csv_vals.push_back(csv_val);
+//    }
+//    file.close();
+//    return csv_vals;
+//}
+
+
 
 string utils::fix_filename(string name)
 {

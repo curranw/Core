@@ -13,6 +13,13 @@
 #include <QElement.h>
 #include <ILearningAlgorithm.h>
 #include <utils.h>
+#include <NeuralNet.h>
+
+#include <doublefann.h>
+#include <parallel_fann.hpp>
+#include <fann_cpp.h>
+#include <fann_train.h>
+
 
 using namespace std;
 
@@ -21,6 +28,20 @@ class QTilesArguments : public ILearningArguments
 public:
     int num_tiles;
     vector<double> resolution;
+};
+
+class NN_Experience
+{
+public:
+    vector<double> state;
+    vector<double> state_scaled;
+    vector<double> next_state;
+    vector<double> next_state_scaled;
+    double reward;
+    int action;
+    vector<double> low_dim_values;
+    vector<double> low_next_state_action_values;
+    vector<double> test;
 };
 
 class QTiles : public ILearningAlgorithm
@@ -33,6 +54,7 @@ public:
     vector<double> get_action_values(vector<QElement *> nearby_states);
     void update(QElement::State old_s, QElement::Action old_a, QElement::State new_s, double reward);
     int get_table_size();
+    unordered_map<int, QElement *> *get_table();
 
     vector<QElement*> q_table;
     unordered_map<int, QElement*> q_table_m;
@@ -52,6 +74,13 @@ public:
     void read(string file);
     bool no_new;
     double alpha, gamma;
+
+
+    void set_table(unordered_map<int, QElement *> table);
+    double get_average();
+    void set_average(double average);
+    vector<QElement*> get_elements(int *input_tiles);
+    double default_weight;
 private:
     QTilesArguments* m_args;
     map<QElement*, vector<double> > eligibility;
@@ -66,9 +95,20 @@ private:
     bool do_eligability;
     int test_it;
     double cur_eps;
+    bool use_tiles;
     set<QElement*> ele_to_update;
     unordered_map<QElement::Action, double> V_local;
     pair<QElement::Action, double> eligibility_action_value;
+
+    bpnet* net;
+    FANN::neural_net* fann_net;
+    vector<vector<fann_type> > inputs;
+    vector<vector<fann_type> > outputs;
+    vector<NN_Experience> experience;
+    bool minibatch;
+
+    //NeuralNet* nn;
+    QElement* nn_qele;
 };
 
 #endif // QTILES_H

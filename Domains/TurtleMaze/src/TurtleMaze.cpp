@@ -12,9 +12,9 @@ TurtleMaze::TurtleMaze() : IDomain()
     vector<pair<string, string> > temp;
     ros::init(temp, "TurtleMazeController");
     ros::NodeHandle node_handler;
-    pose_sub = node_handler.subscribe("/amcl_pose", 100, &TurtleMaze::pose_subscriber, this);
-    odom_sub = node_handler.subscribe("/ground_truth", 100, &TurtleMaze::odom_subscriber, this);
-    laser_sub = node_handler.subscribe("/scan", 200, &TurtleMaze::laser_subscriber, this);
+    //pose_sub = node_handler.subscribe("/amcl_pose", 100, &TurtleMaze::pose_subscriber, this);
+    odom_sub = node_handler.subscribe("/ground_truth", 10, &TurtleMaze::odom_subscriber, this);
+    laser_sub = node_handler.subscribe("/scan", 10, &TurtleMaze::laser_subscriber, this);
     twist_pub = node_handler.advertise<geometry_msgs::Twist>("/mobile_base/commands/velocity", 1);
     init_pose_pub = node_handler.advertise<geometry_msgs::PoseWithCovarianceStamped>("/initialpose", 1);
     ros::service::waitForService("/gazebo/reset_world");
@@ -141,7 +141,7 @@ double TurtleMaze::get_reward()
     bool win = end_of_episode();
     if(win)
     {
-        return 100;
+        return 1000;
     }
     if(!safe) return -10;
     double reward_x = abs(position_x - target_position_x) * abs(position_x - target_position_x);

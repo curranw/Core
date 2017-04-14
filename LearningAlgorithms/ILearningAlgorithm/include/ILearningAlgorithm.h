@@ -31,6 +31,7 @@ public:
     virtual void end_epoch();
     virtual void output(string file);
     virtual void read(string file);
+    virtual ~ILearningAlgorithm();
 protected:
     ILearningArguments* m_args;
 

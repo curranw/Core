@@ -9,6 +9,8 @@ add_subdirectory(ValueIteration)
 add_subdirectory(RMax)
 add_subdirectory(FittedRMax)
 add_subdirectory(Replay)
+add_subdirectory(DelayedQLearningTiles)
+
 
 add_library(LearningAlgorithms dummy.c)
-target_link_libraries(LearningAlgorithms QKNN QTILES QTILESREUSE ILearningAlgorithm TILES RMAX FITTEDRMAX)
+target_link_libraries(LearningAlgorithms QKNN QTILES QTILESREUSE ILearningAlgorithm TILES RMAX FITTEDRMAX DELAYEDQTILES)

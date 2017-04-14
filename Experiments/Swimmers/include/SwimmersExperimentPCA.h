@@ -34,4 +34,6 @@ private:
     double performance;
     int iteration;
     vector<int> table_sizes;
+    vector<int> table_iterations;
+    int cur_dim_it;
 };

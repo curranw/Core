@@ -23,7 +23,7 @@
     <frameName>map</frameName>
     <bodyName>base_link</bodyName>
     <topicName>ground_truth</topicName>
-    <updateRate>5.0</updateRate>
+    <updateRate>10.0</updateRate>
   </plugin>
 </gazebo>
 </robot>

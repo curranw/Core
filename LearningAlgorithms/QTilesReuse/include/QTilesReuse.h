@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 #include <utils.h>
+#include <tiles2.h>
 
 class QTilesReuseArgs : public ILearningArguments
 {
@@ -31,6 +32,7 @@ public:
     void end_epoch();
     int get_table_size();
 
+    void init();
     bool is_converged();
     void clear_trace();
     QElement::State scale(QElement::State* s, int dimension);
@@ -50,6 +52,7 @@ public:
     virtual ~QTilesReuse();
 
 private:
+    vector<vector<double> > projectable_states;
     double running_avg;
     double last_running_avg;
     double tot_reward;

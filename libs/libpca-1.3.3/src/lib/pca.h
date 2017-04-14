@@ -7,6 +7,7 @@
 #include <string>
 #include <sstream>
 #include <armadillo>
+//#define ARMA_DONT_USE_BLAS true
 /**
  * @brief A namespace for statistical analysis
  */

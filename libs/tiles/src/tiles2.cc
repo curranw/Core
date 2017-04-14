@@ -26,14 +26,15 @@ random integers, of which we use only the low-order bytes.
 #include "stdlib.h"
 #include "math.h"
 
+
 void tiles(
-    int the_tiles[],               // provided array contains returned tiles (tile indices)
-    int num_tilings,           // number of tile indices to be returned in tiles
-    int memory_size,           // total number of possible tiles
-    float floats[],            // array of floating point variables
-    int num_floats,            // number of floating point variables
-    int ints[],				   // array of integer variables
-    int num_ints)              // number of integer variables
+        int the_tiles[],               // provided array contains returned tiles (tile indices)
+        int num_tilings,           // number of tile indices to be returned in tiles
+        int memory_size,           // total number of possible tiles
+        float floats[],            // array of floating point variables
+        int num_floats,            // number of floating point variables
+        int ints[],				   // array of integer variables
+        int num_ints)              // number of integer variables
 {
     int i,j;
     int qstate[MAX_NUM_VARS];
@@ -74,13 +75,13 @@ void tiles(
 
 
 void tiles(
-    int the_tiles[],               // provided array contains returned tiles (tile indices)
-    int num_tilings,           // number of tile indices to be returned in tiles
-    collision_table *ctable,    // total number of possible tiles
-    float floats[],            // array of floating point variables
-    int num_floats,            // number of floating point variables
-    int ints[],				   // array of integer variables
-    int num_ints)              // number of integer variables
+        int the_tiles[],               // provided array contains returned tiles (tile indices)
+        int num_tilings,           // number of tile indices to be returned in tiles
+        collision_table *ctable,    // total number of possible tiles
+        float floats[],            // array of floating point variables
+        int num_floats,            // number of floating point variables
+        int ints[],				   // array of integer variables
+        int num_ints)              // number of integer variables
 {
     int i,j;
     int qstate[MAX_NUM_VARS];
@@ -127,23 +128,25 @@ void tiles(
 
 int hash_UNH(int *ints, int num_ints, long m, int increment)
 {
-    static unsigned int rndseq[2048];
-    static int first_call =  1;
+    //unsigned int* rndseq;
+    unsigned int* rndseq = get_rand_seq(0);
+
+    //    static unsigned int rndseq[2048];
+    //    static int first_call =  1;
     int i,k;
     long index;
     long sum = 0;
 
-    /* if first call to hashing, initialize table of random numbers */
-    if (first_call) {
-        printf("inside tiles \n");
-        for (k = 0; k < 2048; k++) {
-            rndseq[k] = 0;
-            for (i=0; i < int(sizeof(int)); ++i)
-                rndseq[k] = (rndseq[k] << 8) | (rand() & 0xff);
-            }
-        first_call = 0;
-    }
-
+    //    /* if first call to hashing, initialize table of random numbers */
+    //    if (first_call) {
+    //        printf("inside tiles \n");
+    //        for (k = 0; k < 2048; k++) {
+    //            rndseq[k] = 0;
+    //            for (i=0; i < int(sizeof(int)); ++i)
+    //                rndseq[k] = (rndseq[k] << 8) | (rand() & 0xff);
+    //            }
+    //        first_call = 0;
+    //    }
     for (i = 0; i < num_ints; i++) {
         /* add random table offset for this dimension and wrap around */
         index = ints[i];
@@ -207,18 +210,18 @@ void collision_table::reset() {
 }
 
 collision_table::collision_table(int size, int safety) {
-  int tmp = size;
-  while (tmp > 2){
-    if (tmp % 2 != 0) {
-      printf("\nSize of collision table must be power of 2 %d",size);
-      exit(0);
+    int tmp = size;
+    while (tmp > 2){
+        if (tmp % 2 != 0) {
+            printf("\nSize of collision table must be power of 2 %d",size);
+            exit(0);
+        }
+        tmp /= 2;
     }
-    tmp /= 2;
-  }
-  data = new long[size];
-  m = size;
-  safe = safety;
-  reset();
+    data = new long[size];
+    m = size;
+    safe = safety;
+    reset();
 }
 
 collision_table::~collision_table() {
@@ -230,7 +233,7 @@ int collision_table::usage() {
     for (int i=0; i<m; i++) if (data[i] != -1)
     {
 
-       count++;
+        count++;
     }
 
     return count;
@@ -429,14 +432,14 @@ void tiles2(int the_tiles[],int nt,collision_table *ct,float f1,float f2,int h1,
 }
 
 void tileswrap(
-    int the_tiles[],               // provided array contains returned tiles (tile indices)
-    int num_tilings,           // number of tile indices to be returned in tiles
-    int memory_size,           // total number of possible tiles
-    float floats[],            // array of floating point variables
-    int num_floats,            // number of floating point variables
-    int wrap_widths[],         // array of widths (length and units as in floats)
-    int ints[],				  // array of integer variables
-    int num_ints)             // number of integer variables
+        int the_tiles[],               // provided array contains returned tiles (tile indices)
+        int num_tilings,           // number of tile indices to be returned in tiles
+        int memory_size,           // total number of possible tiles
+        float floats[],            // array of floating point variables
+        int num_floats,            // number of floating point variables
+        int wrap_widths[],         // array of widths (length and units as in floats)
+        int ints[],				  // array of integer variables
+        int num_ints)             // number of integer variables
 {
     int i,j;
     int qstate[MAX_NUM_VARS];
@@ -467,7 +470,7 @@ void tileswrap(
                 coordinates[i] = qstate[i]+1 + ((base[i] - qstate[i] - 1) % num_tilings) - num_tilings;
             if (wrap_widths[i] != 0) coordinates[i] = coordinates[i] % wrap_widths_times_num_tilings[i];
             if (coordinates[i] < 0) {
-                 while (coordinates[i] < 0)
+                while (coordinates[i] < 0)
                     coordinates[i] += wrap_widths_times_num_tilings[i];
             }
             /* compute displacement of next tiling in quantized space */
@@ -482,14 +485,14 @@ void tileswrap(
 }
 
 void tileswrap(
-    int the_tiles[],               // provided array contains returned tiles (tile indices)
-    int num_tilings,           // number of tile indices to be returned in tiles
-    collision_table *ctable,   // total number of possible tiles
-    float floats[],            // array of floating point variables
-    int num_floats,            // number of floating point variables
-    int wrap_widths[],         // array of widths (length and units as in floats)
-    int ints[],				  // array of integer variables
-    int num_ints)             // number of integer variables
+        int the_tiles[],               // provided array contains returned tiles (tile indices)
+        int num_tilings,           // number of tile indices to be returned in tiles
+        collision_table *ctable,   // total number of possible tiles
+        float floats[],            // array of floating point variables
+        int num_floats,            // number of floating point variables
+        int wrap_widths[],         // array of widths (length and units as in floats)
+        int ints[],				  // array of integer variables
+        int num_ints)             // number of integer variables
 {
     int i,j;
     int qstate[MAX_NUM_VARS];
@@ -521,7 +524,7 @@ void tileswrap(
 
             if (wrap_widths[i] != 0) coordinates[i] = coordinates[i] % wrap_widths_times_num_tilings[i];
             if (coordinates[i] < 0) {
-                 while (coordinates[i] < 0)
+                while (coordinates[i] < 0)
                     coordinates[i] += wrap_widths_times_num_tilings[i];
             }
             /* compute displacement of next tiling in quantized space */
@@ -535,4 +538,39 @@ void tileswrap(
     return;
 }
 
+unsigned int* get_rand_seq(unsigned int* rndseq_input)
+{
+    static unsigned int rndseq[2048];
+    static int first_call =  1;
+    if(rndseq_input == 0)
+    {
+        int i,k;
+        long index;
+        long sum = 0;
 
+        /* if first call to hashing, initialize table of random numbers */
+        if (first_call) {
+            for (k = 0; k < 2048; k++) {
+                rndseq[k] = 0;
+                for (i=0; i < int(sizeof(int)); ++i)
+                {
+                    rndseq[k] = (rndseq[k] << 8) | (rand() & 0xff);
+                }
+                //std::cout << rndseq[k] << std::endl;
+            }
+            first_call = 0;
+        }
+        return rndseq;
+    }
+    else
+    {
+        int i;
+        for(i=0; i<2048; i++)
+        {
+            rndseq[i] = rndseq_input[i];
+            //std::cout << rndseq[i] << std::endl;
+        }
+        first_call = 0;
+    }
+    return rndseq;
+}

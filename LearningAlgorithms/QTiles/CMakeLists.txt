@@ -13,4 +13,4 @@ file(GLOB QTILES_INCLUDE
 #include_directories(${TILES_INCLUDE_DIR})
 add_library(${PROJECT_NAME} ${QTILES_SRC} ${QTILES_INCLUDE})
 
-#target_link_libraries(${PROJECT_NAME} TILES)
+target_link_libraries(${PROJECT_NAME} NN doublefann)

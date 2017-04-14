@@ -105,6 +105,7 @@ void TurtleMazeExperiment::step()
 
 void TurtleMazeExperiment::end_epoch()
 {
+    cout << tot_reward << endl;
     typedef double carrie;
     cout << num_demo_used << endl;
     IExperiment::end_epoch();
@@ -168,27 +169,27 @@ void TurtleMazeExperiment::end_epoch()
 //    num_demo_used = 0;
     //utils::to_csv(&accumulation, "accumulation");
 
-//    if(current_iteration == 10)
-//    {
-//        load_updates("export_file_1.txt");
-//    }
-//    if(current_iteration == 50)
-//    {
-//        load_updates("export_file_1.txt");
-//        load_updates("export_file_2.txt");
-//    }
-//    if(current_iteration == 100)
-//    {
-//        load_updates("export_file_1.txt");
-//        load_updates("export_file_2.txt");
-//        load_updates("export_file_3.txt");
-//    }
+    if(current_iteration == 10)
+    {
+        load_updates("export_file_1.txt");
+    }
+    if(current_iteration == 50)
+    {
+        load_updates("export_file_1.txt");
+        load_updates("export_file_2.txt");
+    }
+    if(current_iteration == 100)
+    {
+        load_updates("export_file_1.txt");
+        load_updates("export_file_2.txt");
+        load_updates("export_file_3.txt");
+    }
 }
 
 void TurtleMazeExperiment::output_results()
 {
-      utils::to_csv(&m_rewards, m_exp_args->save_file);
-//    m_learning_algorithm->output("TurtleMazeQTable");
+      utils::to_csv<double>(&m_rewards, m_exp_args->save_file);
+    m_learning_algorithm->output("TurtleMazeQTable");
 
 //    vector<vector<double> > output_data;
 //    for(map<vector<double>, pair<double, int> >::iterator it = demo_updates.begin(); it != demo_updates.end(); it++)
@@ -204,7 +205,7 @@ void TurtleMazeExperiment::output_results()
 //    }
 //    utils::to_csv_overwrite(&output_data, "demo_data_used.csv");
 
-    utils::to_csv(&performance, "turtle_maze_performance");
+    utils::to_csv(&performance, m_exp_args->save_file + "_performance");
 }
 
 void TurtleMazeExperiment::load_updates(string update_file)

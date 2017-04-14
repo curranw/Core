@@ -1,5 +1,5 @@
 #include <IExperiment.h>
-
+#include <ctime>
 IExperiment::IExperiment(IDomain* domain, ILearningAlgorithm *learning_algorithm, IExperimentArgs *experiment_args)
 {
     tot_reward = 0;
@@ -14,8 +14,11 @@ void IExperiment::run_experiment()
     this->init();
     for(unsigned int i = 0; i < m_exp_args->num_epochs; i++)
     {
+//        double start = std::clock();
         if(finish_learning) break;
         this->epoch();
+//            double duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+//            std::cout<<"printf: "<< duration <<'\n';
     }
     this->output_results();
 }
@@ -84,8 +87,8 @@ void IExperiment::get_reward()
 
 void IExperiment::output_results()
 {
-    vector<double> moving_average = utils::moving_average(&m_rewards, double(m_exp_args->num_epochs)/20.0);
-    utils::to_csv(&moving_average, m_exp_args->save_file);
+    //vector<double> moving_average = utils::moving_average(&m_rewards, double(m_exp_args->num_epochs)/20.0);
+    utils::to_csv<double>(&m_rewards, m_exp_args->save_file);
 }
 
 void IExperiment::begin_epoch()
@@ -99,7 +102,6 @@ void IExperiment::end_epoch()
     m_rewards.push_back(tot_reward);
     if(m_domain->m_accumulate_data) m_accumulated_data.clear();
     if(m_domain->m_accumulate_data) m_accumulated_rewards.clear();
-
     current_iteration++;
     if(current_iteration % 100 == 0)
         cout << current_iteration << ", " << tot_reward << endl;

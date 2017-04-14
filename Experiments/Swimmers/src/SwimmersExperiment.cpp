@@ -94,7 +94,7 @@ void SwimmersExperiment::end_epoch()
 {
     if(m_domain->m_accumulate_data && m_accumulated_data.size() >= 100)
     {
-        if(tot_reward > 300 && good_data.size() < 50000)
+        if(tot_reward > 350 && good_data.size() < 50000)
         {
             for(unsigned int i = 0; i < m_accumulated_data.size(); i++)
             {
@@ -111,9 +111,10 @@ void SwimmersExperiment::end_epoch()
             }
         }
     }
-
+    if(iteration % 100 == 0) cout << ((QTiles*)m_learning_algorithm)->get_table_size() << endl;
     IExperiment::end_epoch();
     iteration++;
+    m_domain->viz = false;
 
 //    if(iteration == m_exp_args->num_epochs-1)
 //    {
@@ -125,23 +126,26 @@ void SwimmersExperiment::end_epoch()
 
 void SwimmersExperiment::output_results()
 {
+    table_sizes.push_back(((QTiles*)m_learning_algorithm)->get_table_size());
+    utils::to_csv<int>(&table_sizes, m_exp_args->save_file + "-table_size");
     IExperiment::output_results();
     if(m_domain->m_accumulate_data)
     {
-        if(good_data.size() >= 50000) utils::to_csv(&good_data, "converged_state_data_swimmers_good_large_NEWEST");
-        if(bad_rewards.size() >= 50000) utils::to_csv(&bad_rewards, "converged_state_rewards_swimmers_bad_large_NEWEST");
-        if(bad_data.size() >= 50000) utils::to_csv(&bad_data, "converged_state_data_swimmers_bad_NEWEST");
-        if(good_rewards.size() >= 50000) utils::to_csv(&good_rewards, "converged_state_rewards_swimmers_good_NEWEST");
-
-
+        if(good_data.size() >= 500) utils::to_csv2d<double>(&good_data, "converged_state_data_good_" + m_exp_args->save_file);
+//        if(bad_rewards.size() >= 500) utils::to_csv<double>(&bad_rewards, "converged_state_rewards_bad_" + m_exp_args->save_file);
+        if(bad_data.size() >= 500) utils::to_csv2d<double>(&bad_data, "converged_state_data_bad_" + m_exp_args->save_file);
+//        if(good_rewards.size() >= 500) utils::to_csv<double>(&good_rewards, "converged_state_rewards_good_" + m_exp_args->save_file);
     }
-
+    //m_learning_algorithm->output("QTable_"  + m_exp_args->save_file);
 }
 
 
 
 SwimmersExperiment::~SwimmersExperiment()
 {
+    delete m_domain;
+    delete m_learning_algorithm;
+    delete m_exp_args;
 }
 
 

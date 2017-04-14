@@ -54,7 +54,15 @@ MountainCarExperiment::MountainCarExperiment(MountainCar3D *domain, FittedRMax *
     if(m_exp_args->demonstrations) domain->m_accumulate_data = true;
 
 }
+MountainCarExperiment::MountainCarExperiment(MountainCar3D *domain, DelayedQLearningTiles *learning_algorithm, MountainCarExperimentArgs* exp_args)
+    : IExperiment(domain, learning_algorithm, exp_args)
+{
+    m_learning_algorithm = learning_algorithm;
+    m_domain = domain;
+    m_exp_args = exp_args;
+    if(m_exp_args->demonstrations) domain->m_accumulate_data = true;
 
+}
 void MountainCarExperiment::end_epoch()
 {
     if(m_domain->m_accumulate_data && m_accumulated_data.size() >= 100)
@@ -83,9 +91,8 @@ void MountainCarExperiment::output_results()
     IExperiment::output_results();
     if(m_domain->m_accumulate_data)
     {
-        if(good_data.size() >= 50000) utils::to_csv(&good_data, "mountain_car_3d_good");
-
-        if(bad_data.size() >= 50000) utils::to_csv(&bad_data, "mountain_car_3d_bad");
+        if(good_data.size() >= 50000) utils::to_csv2d<double>(&good_data, "converged_state_data_good_" + m_exp_args->save_file);
+        if(bad_data.size() >= 50000) utils::to_csv2d<double>(&bad_data, "converged_state_data_bad_" + m_exp_args->save_file);
     }
 }
 

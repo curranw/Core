@@ -1,7 +1,9 @@
 #include <AAAI2015.h>
 void AAAI2015::setup_experiments()
 {
-    normal_learning("Normal_4");
+    //normal_learning("Mountain_Car3D_Normal");
+    pca_learning("mountain_car_3d_good_1.csv", -1, "Mountain_Car3D_PCA",2, true);
+    //normal_learning_res_not_scaled("Mountain_Car3D_Normal_res");
 //    for(unsigned int i = 0; i < 20; i++)
 //    {
 //        srand(time(NULL));
@@ -115,7 +117,37 @@ void AAAI2015::setup_experiments()
 //    {
 //        srand(time(NULL));
 //        pca_learning_scaled("8/converged_state_data_3d_good.csv", -1, "test_pca_8");
-//    }
+    //    }
+}
+
+void AAAI2015::normal_learning_res_not_scaled(string save_file)
+{
+    QTilesArguments* learning_args = new QTilesArguments();
+    learning_args->alpha = 0.1;
+    learning_args->gamma = 0.99;
+    learning_args->eligability = false;
+    learning_args->num_tiles = 32;
+
+    vector<double> resolution;
+    resolution.push_back(0.45);
+    resolution.push_back(0.45);
+    resolution.push_back(0.035);
+    resolution.push_back(0.035);
+    learning_args->resolution = resolution;
+
+    MountainCar3D* domain = new MountainCar3D();
+
+    MountainCarExperimentArgs* experiment_args = new MountainCarExperimentArgs();
+    experiment_args->demonstrations = true;
+    experiment_args->num_steps = 2000;
+    experiment_args->num_epochs = 5000;
+    experiment_args->save_file = save_file;
+
+    QTiles* learning_algorithm = new QTiles(learning_args);
+
+    MountainCarExperiment* exp = new MountainCarExperiment(domain, learning_algorithm, experiment_args);
+    exp->run_experiment();
+    delete exp;
 }
 
 void AAAI2015::normal_learning(string save_file)
@@ -127,10 +159,10 @@ void AAAI2015::normal_learning(string save_file)
     learning_args->num_tiles = 32;
 
     vector<double> resolution;
-    resolution.push_back(0.1);
-    resolution.push_back(0.1);
-    resolution.push_back(0.1);
-    resolution.push_back(0.1);
+    resolution.push_back(0.45);
+    resolution.push_back(0.45);
+    resolution.push_back(0.035);
+    resolution.push_back(0.035);
     learning_args->resolution = resolution;
 
     MountainCar3D* domain = new MountainCar3D();
@@ -138,7 +170,7 @@ void AAAI2015::normal_learning(string save_file)
     MountainCarExperimentArgs* experiment_args = new MountainCarExperimentArgs();
     experiment_args->demonstrations = true;
     experiment_args->num_steps = 2000;
-    experiment_args->num_epochs = 50000;
+    experiment_args->num_epochs = 5000;
     experiment_args->save_file = save_file;
 
     QTiles* learning_algorithm = new QTiles(learning_args);
@@ -275,7 +307,7 @@ void AAAI2015::pca_learning(string pca_file, int amount, string save_file, int d
         learning_tiles_args->alpha = 0.1;
         learning_tiles_args->gamma = 0.99;
         learning_tiles_args->eligability = false;
-        learning_tiles_args->num_tiles = 10;
+        learning_tiles_args->num_tiles = 32;
         QTiles* learning_algorithm = new QTiles(learning_tiles_args);
 
         learning_args->learning_algorithms.push_back(learning_algorithm);
@@ -284,10 +316,10 @@ void AAAI2015::pca_learning(string pca_file, int amount, string save_file, int d
     learning_args->amount = amount;
 
     vector<double> resolution;
-    resolution.push_back(0.1);
-    resolution.push_back(0.1);
-    resolution.push_back(0.1);
-    resolution.push_back(0.1);
+    resolution.push_back(0.45);
+    resolution.push_back(0.45);
+    resolution.push_back(0.035);
+    resolution.push_back(0.035);
     learning_args->resolution = resolution;
 
     QTilesReuse* learning_algorithm = new QTilesReuse(4, learning_args);
@@ -298,7 +330,7 @@ void AAAI2015::pca_learning(string pca_file, int amount, string save_file, int d
     MountainCarExperimentPCAArgs* experiment_args = new MountainCarExperimentPCAArgs();
     experiment_args->demonstrations = false;
     experiment_args->num_steps = 2000;
-    experiment_args->num_epochs = 50000;
+    experiment_args->num_epochs = 5000;
     experiment_args->save_file = save_file;
     experiment_args->iterative = iterative;
     experiment_args->start_dimension = dim;

@@ -1,0 +1,11 @@
+prefix=/nfs/attic/smartw/users/curranw/ManifoldLearningNew/ManifoldLearning/cfitsio
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: cfitsio
+Description: FITS File Subroutine Library
+Version: 3.41
+Libs: -L${libdir} -lcfitsio 
+Libs.private: -lm
+Cflags: -I${includedir}

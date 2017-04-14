@@ -20,6 +20,7 @@ class AAAI2015
 public:
     void setup_experiments();
 
+    void normal_learning_res_not_scaled(string save_file);
     void normal_learning(string save_file);
     void normal_learning4d(string save_file);
     void normal_learning_scaled(string save_file);

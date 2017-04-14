@@ -25,6 +25,7 @@ public:
     QElement::Action action;
     vector<double> next_state_action_values;
     double old_value;
+    vector<double> old_values;
     vector<QElement*> states_to_update;
     vector<double> old_probabilities;
     QElement::Action best_action;
