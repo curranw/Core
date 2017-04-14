@@ -108,7 +108,7 @@ void ValueIteration::calculate_states()
     }
 }
 
-void ValueIteration::calculate_solution()
+void ValueIteration::calculate_solution(bool debug)
 {
     //arma::vec a = arma::nonzeros((*P));
     //cout << "SIZE OF NONZERO: " ;
